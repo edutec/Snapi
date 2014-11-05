@@ -1,14 +1,14 @@
 Process.prototype.newAssociation = function(key,value) {
 	return new Association(key,value);
-}
+};
 
 Process.prototype.setValue = function(association,value) {
 	association.setValue(value);
-}
+};
 
 Process.prototype.getValue = function(association) {
 	return association.value;
-}
+};
 
 Process.prototype.associationAt = function (key, snapObject) {
 	var array = snapObject.asArray();
@@ -18,11 +18,11 @@ Process.prototype.associationAt = function (key, snapObject) {
 	}
 
 	return Association(null,null);
-}
+};
 
 Process.prototype.valueAt = function (key, snapObject) {
 	return this.associationAt(key, snapObject).value;
-}
+};
 
 Process.prototype.jsonObject = function (jsonString) {
 
@@ -37,4 +37,26 @@ Process.prototype.jsonObject = function (jsonString) {
 			return jsonObject;
 		}
 	}
+};
+
+Process.prototype.apiCall = function (url, parameters) {
+	var response;
+    if (!this.httpRequest) {
+		var fullUrl = url;
+		if (parameters) {
+			fullUrl += '?';
+			parameters.asArray().forEach(function(each) { fullUrl += each.key + '=' + each.value + '&' });
+			fullUrl = fullUrl.slice(0, -1);
+		};
+        this.httpRequest = new XMLHttpRequest();
+        this.httpRequest.open("GET", 'http://www.corsproxy.com/' + fullUrl, true);
+        this.httpRequest.send(null);
+    } else if (this.httpRequest.readyState === 4) {
+        response = this.httpRequest.responseText;
+        this.httpRequest = null;
+        return this.jsonObject(response);
+    }
+    this.pushContext('doYield');
+    this.pushContext();
 }
+

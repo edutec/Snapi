@@ -213,6 +213,13 @@ SpriteMorph.prototype.initBlocks = function() {
 				spec: 'value at %s of object %s'
 		};
 
+		this.blocks.apiCall =
+		{
+				type: 'reporter',
+				category: 'api',
+				spec: 'call API at http:// %s with parameters %exp'
+		};
+
 }
 
 SpriteMorph.prototype.initBlocks();
@@ -245,6 +252,9 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 				blocks.push(blockBySelector('getValue'));
 				blocks.push(blockBySelector('associationAt'));
 				blocks.push(blockBySelector('valueAt'));
+				blocks.push('-');
+				// API Access
+				blocks.push(blockBySelector('apiCall'));
 		};
 
 		return blocks;
