@@ -1,3 +1,43 @@
+// labelPart() proxy
+SyntaxElementMorph.prototype.originalLabelPart = SyntaxElementMorph.prototype.labelPart;
+
+SyntaxElementMorph.prototype.labelPart = function(spec) {
+	var part;
+	switch (spec) {
+		case '%protocol':
+			part = new InputSlotMorph(
+					null,
+					false,
+					{
+					'http' : ['http://'],
+					'https' : ['https://'], 
+					},
+					true
+					);
+			break;
+		case '%method':
+			part = new InputSlotMorph(
+					null,
+					false,
+					{
+					'GET' : ['GET'],
+					'POST' : ['POST'], 
+					'PUT' : ['PUT'], 
+					'HEAD' : ['HEAD'], 
+					'DELETE' : ['DELETE'], 
+					'TRACE' : ['TRACE'], 
+					'CONNECT' : ['CONNECT'], 
+					},
+					true
+					);
+			break;
+
+		default:
+			part = SyntaxElementMorph.prototype.originalLabelPart(spec);
+	}
+	return part;
+}
+
 SyntaxElementMorph.prototype.originalShowBubble = SyntaxElementMorph.prototype.showBubble;
 
 SyntaxElementMorph.prototype.showBubble = function(value, exportPic) {

@@ -1,0 +1,1 @@
+<blocks app="Snap! 4.0, http://snap.berkeley.edu" version="1"><block-definition s="random question" type="reporter" category="api"><header></header><code></code><inputs></inputs><script><block s="doReport"><block s="proxiedApiCall"><l><option>GET</option></l><l>http://</l><l>jservice.io/api/random</l><list><l></l></list></block></block></script></block-definition></blocks>

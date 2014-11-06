@@ -39,17 +39,17 @@ Process.prototype.jsonObject = function (jsonString) {
 	}
 };
 
-Process.prototype.apiCall = function (url, parameters) {
+Process.prototype.apiCall = function (method, protocol, url, parameters) {
 	var response;
+	var fullUrl = protocol + url;
     if (!this.httpRequest) {
-		var fullUrl = url;
 		if (parameters) {
 			fullUrl += '?';
-			parameters.asArray().forEach(function(each) { fullUrl += each.key + '=' + each.value + '&' });
+			parameters.asArray().forEach(function(each) {  fullUrl += each.key + '=' + each.value + '&' });
 			fullUrl = fullUrl.slice(0, -1);
 		};
         this.httpRequest = new XMLHttpRequest();
-        this.httpRequest.open("GET", 'http://www.corsproxy.com/' + fullUrl, true);
+        this.httpRequest.open(method, fullUrl, true);
         this.httpRequest.send(null);
     } else if (this.httpRequest.readyState === 4) {
         response = this.httpRequest.responseText;
@@ -58,5 +58,9 @@ Process.prototype.apiCall = function (url, parameters) {
     }
     this.pushContext('doYield');
     this.pushContext();
+}
+
+Process.prototype.proxiedApiCall = function (method, protocol, url, parameters) {
+	return this.apiCall(method, protocol, 'www.corsproxy.com/' + url, parameters)
 }
 

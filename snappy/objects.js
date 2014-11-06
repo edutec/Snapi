@@ -217,7 +217,15 @@ SpriteMorph.prototype.initBlocks = function() {
 		{
 				type: 'reporter',
 				category: 'api',
-				spec: 'call API at http:// %s with parameters %exp'
+				spec: '%method at %protocol %s with parameters %exp',
+				defaults: ['GET', 'http://', null, null]
+		};
+		this.blocks.proxiedApiCall =
+		{
+				type: 'reporter',
+				category: 'api',
+				spec: 'proxied %method at %protocol %s with parameters %exp',
+				defaults: ['GET', 'http://', null, null]
 		};
 
 }
@@ -255,6 +263,7 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 				blocks.push('-');
 				// API Access
 				blocks.push(blockBySelector('apiCall'));
+				blocks.push(blockBySelector('proxiedApiCall'));
 		};
 
 		return blocks;
