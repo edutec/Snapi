@@ -1,7 +1,7 @@
 ListWatcherMorph.prototype.update = function (anyway) {
     var i, idx, ceil, morphs, cell, cnts, label, button, max,
         starttime, maxtime = 1000;
-/*
+
     this.frame.contents.children.forEach(function (m) {
 
         if (m instanceof CellMorph
@@ -9,7 +9,7 @@ ListWatcherMorph.prototype.update = function (anyway) {
             m.contentsMorph.update();
         }
     });
-*/
+
     if (this.lastUpdated === this.list.lastChanged && !anyway) {
         return null;
     }

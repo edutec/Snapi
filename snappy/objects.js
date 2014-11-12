@@ -182,6 +182,13 @@ SpriteMorph.prototype.initBlocks = function() {
 				category: 'api',
 				spec: 'object from JSON %s'
 		};
+		this.blocks.inspectJson =
+		{
+				type: 'command',
+				category: 'api',
+				spec: 'inspect JSON %s',
+				defaults: ['{"name":"John","surname":"Doe","age":14}']
+		};
 		this.blocks.newAssociation =
 		{
 				type: 'reporter',
@@ -217,14 +224,14 @@ SpriteMorph.prototype.initBlocks = function() {
 		{
 				type: 'reporter',
 				category: 'api',
-				spec: '%method at %protocol %s with parameters %exp',
+				spec: '%method at %protocol %s with parameters %mult%s',
 				defaults: ['GET', 'http://', null, null]
 		};
 		this.blocks.proxiedApiCall =
 		{
 				type: 'reporter',
 				category: 'api',
-				spec: 'proxied %method at %protocol %s with parameters %exp',
+				spec: 'proxied %method at %protocol %s with parameters %mult%s',
 				defaults: ['GET', 'http://', null, null]
 		};
 
@@ -254,6 +261,7 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 				blocks.push('-');
 				// JSON and Associations
 				blocks.push(blockBySelector('jsonObject'));
+				blocks.push(blockBySelector('inspectJson'));
 				blocks.push('-');
 				blocks.push(blockBySelector('newAssociation'));
 				blocks.push(blockBySelector('setValue'));

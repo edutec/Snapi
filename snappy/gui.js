@@ -1,3 +1,5 @@
+
+
 IDE_Morph.prototype.projectMenu = function () {
 		var menu,
 			myself = this,
@@ -199,7 +201,7 @@ IDE_Morph.prototype.projectMenu = function () {
 						function () {
 								// read a list of libraries from an external file,
 								var libMenu = new MenuMorph(this, 'Import API blocks'),
-									libUrl = 'apilibs/LIBRARIES';
+				libUrl = 'apilibs/LIBRARIES';
 		// our vps URL?
 		// libUrl = 'http://snap.berkeley.edu/snapsource/libraries/' +
 		// 'LIBRARIES';
@@ -232,3 +234,64 @@ IDE_Morph.prototype.projectMenu = function () {
 		menu.popup(world, pos);
 };
 
+// Snappy! logo
+
+IDE_Morph.prototype.createLogo = function () {
+		var myself = this;
+
+		if (this.logo) {
+				this.logo.destroy();
+		}
+
+		this.logo = new Morph();
+		this.logo.texture = 'snappy/logo.png'; // Overriden
+		this.logo.drawNew = function () {
+				this.image = newCanvas(this.extent());
+				var context = this.image.getContext('2d'),
+					gradient = context.createLinearGradient(
+									0,
+									0,
+									this.width(),
+									0
+									);
+				gradient.addColorStop(0, 'black');
+				gradient.addColorStop(0.5, myself.frameColor.toString());
+				context.fillStyle = MorphicPreferences.isFlat ?
+						myself.frameColor.toString() : gradient;
+				context.fillRect(0, 0, this.width(), this.height());
+				if (this.texture) {
+						this.drawTexture(this.texture);
+				}
+		};
+
+		this.logo.drawCachedTexture = function () {
+				var context = this.image.getContext('2d');
+				context.drawImage(
+								this.cachedTexture,
+								5,
+								Math.round((this.height() - this.cachedTexture.height) / 2)
+								);
+				this.changed();
+		};
+
+		this.logo.mouseClickLeft = function () {
+				myself.snapMenu();
+		};
+
+		this.logo.color = new Color();
+		this.logo.setExtent(new Point(200, 28)); // dimensions are fixed
+		this.add(this.logo);
+};
+
+/*
+// Allow dropping of JsonInspectorMorphs
+IDE_Morph.prototype.originalInit = IDE_Morph.prototype.init; 
+IDE_Morph.prototype.init = function () {
+	this.originalInit();
+
+	originalWantsDropOf = this.wantsDropOf;
+	this.wantsDropOf = function (morph) {
+		return (originalWantsDropOf() || morph instanceof JsonInspectorMorph);
+    };
+}
+*/

@@ -1,0 +1,37 @@
+<blocks app="Snap! 4.0, http://snap.berkeley.edu" version="1"><block-definition s="%&apos;col·leccio&apos; filtrat per %&apos;filtre&apos;" type="reporter" category="api"><header></header><code></code><inputs><input type="%txt"><options>activitats
+noticies
+municipis
+publicacions
+estudis_territorials
+projectes_obres
+infraestructures
+tramits
+cooperacio
+equipaments
+equipaments_platja
+pla_urbanistic
+datasets
+perfil_contractant_procediment_obert
+perfil_contractant_procediment_negociat
+activitats_taxi
+publicacions_taxi
+noticies_taxi
+notes_premsa</options></input><input type="%mult%s"></input></inputs><script><block s="doReport"><block s="valueAt"><l>items</l><block s="proxiedApiCall"><l><option>GET</option></l><l>http://</l><block s="reportJoinWords"><list><l>opendata.amb.cat/</l><block var="col·leccio"/><l>/search</l></list></block><block var="filtre"/></block></block></block></script></block-definition><block-definition s="esquema de %&apos;col·leccio&apos;" type="reporter" category="api"><header></header><code></code><inputs><input type="%txt"><options>activitats
+noticies
+municipis
+publicacions
+estudis_territorials
+projectes_obres
+infraestructures
+tramits
+cooperacio
+equipaments
+equipaments_platja
+pla_urbanistic
+datasets
+perfil_contractant_procediment_obert
+perfil_contractant_procediment_negociat
+activitats_taxi
+publicacions_taxi
+noticies_taxi
+notes_premsa</options></input></inputs><script><block s="doReport"><block s="valueAt"><l>schema</l><block s="valueAt"><l>items</l><block s="proxiedApiCall"><l><option>GET</option></l><l>http://</l><block s="reportJoinWords"><list><l>opendata.amb.cat/</l><block var="col·leccio"/><l>/schema</l></list></block><list></list></block></block></block></block></script></block-definition></blocks>
