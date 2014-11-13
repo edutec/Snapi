@@ -39,11 +39,17 @@ JsonInspectorMorph.prototype.init = function(target) {
 	frame.add(this.detail);
 	frame.acceptsDrops = false;
 
+    this.list.action = function () {
+        myself.hasUserEditedDetails = false;
+        myself.updateCurrentSelection(inspector);
+    };
+
 	this.list.scrollBarSize = 1;
 	this.list.setHeight(180);
 	this.list.setWidth(this.list.width() + 2);
 	this.list.setLeft(0);
 	this.list.setTop(0);
+	this.detail.scrollBarSize = 1;
 	this.detail.setLeft(this.list.width() + 2);
 	this.detail.setTop(0);
 	this.detail.setHeight(this.list.height());
@@ -63,6 +69,39 @@ JsonInspectorMorph.prototype.init = function(target) {
     this.fixLayout();
 }
 
+JsonInspectorMorph.prototype.updateCurrentSelection = function(inspector) {
+    var val, txt, cnts,
+        sel = this.list.selected,
+        currentTxt = this.detail.contents.children[0],
+        root = this.root();
+
+    if (root &&
+            (root.keyboardReceiver instanceof CursorMorph) &&
+            (root.keyboardReceiver.target === currentTxt)) {
+        inspector.hasUserEditedDetails = true;
+        return;
+    }
+    if (isNil(sel) || inspector.hasUserEditedDetails) {return; }
+    val = inspector.target[sel];
+    inspector.currentProperty = val;
+    if (isNil(val)) {
+        txt = 'NULL';
+    } else if (isString(val)) {
+        txt = val;
+    } else if (typeof val === 'object' ) {
+        txt = JSON.stringify(val, null, "\t");
+		if (txt.length > 20000) { txt = txt.substring(0,20000) + '\n(...)' };
+    } else {
+        txt = val.toString();
+	}
+    if (currentTxt.text === txt) {return; }
+    cnts = new TextMorph(txt);
+    cnts.isEditable = true;
+    cnts.enableSelecting();
+    cnts.setReceiver(inspector.target);
+    this.detail.setContents(cnts);
+};
+	
 JsonInspectorMorph.prototype.popUp = function (target) {
 	JsonInspectorMorph.uber.popUp.call(this, target.world());
 	this.handle = new HandleMorph(
