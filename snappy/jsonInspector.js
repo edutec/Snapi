@@ -17,60 +17,62 @@ function JsonInspectorMorph(target) {
 JsonInspectorMorph.prototype.init = function(target) {
 
 	var myself = this;
-
     this.handle = null;
+	var inspector = new InspectorMorph(target);
+	var value = inspector.target.toString();
 	
     JsonInspectorMorph.uber.init.call(this);
 
-	this.inspector = new InspectorMorph(target);
-
-	this.labelString = this.inspector.target.toString();
+	this.labelString = value.length < 41 ? value : value.substring(0, 40) + '...';
 	this.createLabel();
 
-	this.list = this.inspector.list;
-	this.detail = this.inspector.detail;
+	this.list = inspector.list;
+	this.detail = inspector.detail;
+
+	var inspectIt = function() { myself.jsonInspect(inspector.currentProperty) };
+
+	this.list.doubleClickAction = inspectIt;
 
 	frame = new FrameMorph();
 	frame.color = this.color;
 	frame.add(this.list);
 	frame.add(this.detail);
+	frame.acceptsDrops = false;
 
+	this.list.scrollBarSize = 1;
+	this.list.setHeight(180);
+	this.list.setWidth(this.list.width() + 2);
 	this.list.setLeft(0);
 	this.list.setTop(0);
-	this.detail.setLeft(this.list.width);
+	this.detail.setLeft(this.list.width() + 2);
 	this.detail.setTop(0);
 	this.detail.setHeight(this.list.height());
     frame.setWidth(this.list.width() + this.detail.width());
     frame.setHeight(this.list.height());
 
-	this.inspectIt = function() {
-        this.jsonInspect(myself.inspector.currentProperty);
-	}
-
-	// Why isn't this working?
-	this.list.doubleClickAction = myself.inspectIt;
-
+	// We need to do this again in order for the doubleClickAction to percolate down to the list contents
+	this.list.buildListContents();
+	
 	this.addBody(frame);
-    this.addButton('inspectIt', 'Inspect');
+
+    this.addButton(inspectIt, 'Inspect');
     this.addButton('cancel', 'Close');
-    this.fixLayout();
+
+	this.fixLayout();
     this.drawNew();
     this.fixLayout();
 }
 
 JsonInspectorMorph.prototype.popUp = function (target) {
-    var world = target.world();
-
-    if (world) {
-        JsonInspectorMorph.uber.popUp.call(this, world);
-        this.handle = new HandleMorph(
-            this,
-            280,
-            220,
-            this.corner,
-            this.corner
-        );
-    }
+	JsonInspectorMorph.uber.popUp.call(this, target.world());
+	this.handle = new HandleMorph(
+		this,
+		280,
+		220,
+		this.corner,
+		this.corner,
+		'resize'
+	);
 };
 
 Morph.prototype.jsonInspect = function(inspectee) {
