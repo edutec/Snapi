@@ -28,7 +28,7 @@ BlockMorph.prototype.userMenu = function () {
 								if (typeof result == 'string') { 
 									inspectors.forEach(function(each) { each.cancel() });
 									inspectors.push(world.jsonInspect(JSON.parse(result)))
-								} else if (result instanceof List) {
+								} else if (result instanceof List && result.length() > 0) {
 									// A bit convoluted, we're converting stuff to and fro all the time...
 									inspectors.forEach(function(each) { each.cancel() });
 									inspectors.push(world.jsonInspect(JSON.parse(Process.prototype.objectToJsonString(result))))
