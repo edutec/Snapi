@@ -1,5 +1,3 @@
-
-
 IDE_Morph.prototype.projectMenu = function () {
 		var menu,
 			myself = this,

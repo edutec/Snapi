@@ -39,9 +39,29 @@ Process.prototype.jsonObject = function (jsonString) {
 		}
 };
 
-Process.prototype.inspectJson = function (jsonString) {
-		world.jsonInspect(JSON.parse(jsonString));
-};
+Process.prototype.objectToJsonString = function (object) {
+		return toJsonString(object);
+
+		function toJsonString(object) {
+				if (object instanceof List) {
+						var array = object.asArray(),
+							mappedArray = array.map(function(eachElement) { return toJsonString(eachElement) }); 
+
+						if (array.every(function(eachElement) { return (eachElement instanceof Association) })) {
+							// We're dealing with an object
+							return '{' + mappedArray  + '}';
+						} else {
+							// We're dealing with an array
+							return '[' + mappedArray + ']';
+						}
+				} else if (object instanceof Association) {
+						return '"' + object.key + '":' + toJsonString(object.value);
+				} else {
+						return JSON.stringify(object);
+				}
+		}
+
+}
 
 Process.prototype.apiCall = function (method, protocol, url, parameters) {
 		var response;
