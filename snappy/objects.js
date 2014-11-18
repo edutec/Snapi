@@ -3,7 +3,6 @@
 SpriteBubbleMorph.prototype.originalDataAsMorph = SpriteBubbleMorph.prototype.dataAsMorph;
 
 SpriteBubbleMorph.prototype.dataAsMorph = function (data) {
-		console.log(data);
 		if (data instanceof Association) {
 				contents = new AssociationWatcherMorph(data);
 				contents.isDraggable = false;

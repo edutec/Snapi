@@ -1,3 +1,27 @@
+BlockMorph.prototype.originalUserMenu = BlockMorph.prototype.userMenu;
+
+BlockMorph.prototype.userMenu = function () {
+	var menu = this.originalUserMenu();
+	menu.addItem(
+		'inspect JSON',
+		function() {
+			var top = this.topBlock(),
+				receiver = top.receiver(),
+				stage;  
+			if (top !== this) {return; }
+			if (receiver) {
+				stage = receiver.parentThatIsA(StageMorph);
+				if (stage) {
+					stage.threads.stopProcess(top);
+					stage.threads.startProcess(top, false, false, function(result) { console.log(result); world.inspectJson(result) });
+				}
+			}
+		}
+	);
+	return menu;
+}
+
+
 // labelPart() proxy
 SyntaxElementMorph.prototype.originalLabelPart = SyntaxElementMorph.prototype.labelPart;
 
