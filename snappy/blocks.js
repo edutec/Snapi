@@ -10,7 +10,6 @@ BlockMorph.prototype.userMenu = function () {
 		top = this.topBlock();
 
 	if (top instanceof ReporterBlockMorph) {
-		inspectors = [];
 		menu.addItem(
 			'inspect JSON',
 			function() {
@@ -26,12 +25,10 @@ BlockMorph.prototype.userMenu = function () {
 							// to close them all but the last one... sorry, dear readers!
 							try {
 								if (typeof result == 'string') { 
-									inspectors.forEach(function(each) { each.cancel() });
-									inspectors.push(world.jsonInspect(JSON.parse(result)))
+									world.jsonInspect(JSON.parse(result))
 								} else if (result instanceof List && result.length() > 0) {
 									// A bit convoluted, we're converting stuff to and fro all the time...
-									inspectors.forEach(function(each) { each.cancel() });
-									inspectors.push(world.jsonInspect(JSON.parse(Process.prototype.objectToJsonString(result))))
+									world.jsonInspect(JSON.parse(Process.prototype.objectToJsonString(result)))
 								}
 							} catch (err) {
 								// This doesn't look like something JSON-inspectable, ignore it
