@@ -150,4 +150,5 @@ Morph.prototype.jsonInspect = function(inspectee) {
             this.world() : this.root() || this.world;
     inspector = new JsonInspectorMorph(inspectee);
     inspector.popUp(world);
+	return inspector;
 }
