@@ -16,7 +16,7 @@ perfil_contractant_procediment_negociat
 activitats_taxi
 publicacions_taxi
 noticies_taxi
-notes_premsa</options></input><input type="%mult%s"></input></inputs><script><block s="doReport"><block s="proxiedApiCall"><l><option>GET</option></l><l>http://</l><block s="reportJoinWords"><list><l>opendata.amb.cat/</l><block var="col·leccio"/><l>/search</l></list></block><block var="filtre"/></block></block></script></block-definition><block-definition s="esquema de %&apos;col·leccio&apos;" type="reporter" category="api"><header></header><code></code><inputs><input type="%txt"><options>activitats
+notes_premsa</options></input><input type="%mult%s"></input></inputs><script><block s="doReport"><block s="apiCall"><l><option>GET</option></l><l><option>https://</option></l><block s="reportJoinWords"><list><l>amb-239306f14390.my.apitools.com/</l><block var="col·leccio"/><l>/search</l></list></block><block var="filtre"/></block></block></script></block-definition><block-definition s="esquema de %&apos;col·leccio&apos;" type="reporter" category="api"><header></header><code></code><inputs><input type="%txt"><options>activitats
 noticies
 municipis
 publicacions
@@ -34,4 +34,4 @@ perfil_contractant_procediment_negociat
 activitats_taxi
 publicacions_taxi
 noticies_taxi
-notes_premsa</options></input></inputs><script><block s="doReport"><block s="proxiedApiCall"><l><option>GET</option></l><l>http://</l><block s="reportJoinWords"><list><l>opendata.amb.cat/</l><block var="col·leccio"/><l>/schema</l></list></block><list></list></block></block></script></block-definition></blocks>
+notes_premsa</options></input></inputs><script><block s="doReport"><block s="apiCall"><l><option>GET</option></l><l><option>https://</option></l><block s="reportJoinWords"><list><l>amb-239306f14390.my.apitools.com/</l><block var="col·leccio"/><l>/schema</l></list></block><list></list></block></block></script></block-definition></blocks>
