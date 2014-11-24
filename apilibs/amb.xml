@@ -34,4 +34,4 @@ perfil_contractant_procediment_negociat
 activitats_taxi
 publicacions_taxi
 noticies_taxi
-notes_premsa</options></input></inputs><script><block s="doReport"><block s="proxiedApiCall"><l><option>GET</option></l><l>http://</l><block s="reportJoinWords"><list><l>opendata.amb.cat/</l><block var="col·leccio"/><l>/schema</l></list></block><list></list></block></block></script></block-definition></blocks>
+notes_premsa</options></input></inputs><script><block s="doReport"><block s="proxiedApiCall"><l><option>GET</option></l><l>http://</l><block s="reportJoinWords"><list><l>opendata.amb.cat/</l><block var="col·leccio"/><l>/schema</l></list></block><block var="filtre"/></block></block></script></block-definition></blocks>
