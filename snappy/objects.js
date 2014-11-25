@@ -276,4 +276,108 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 		return blocks;
 }
 
+// OpenLayers Stage
+
+StageMorph.prototype.originalInit = StageMorph.prototype.init; 
+StageMorph.prototype.init = function (globals) {
+	this.originalInit(globals);
+	var myself = this;
+
+	var loc = ol.proj.transform([41.359827, 2.061749], 'EPSG:4326', 'EPSG:3857');
+
+	this.mapDiv = document.createElement('div');
+	this.mapDiv.style['visibility'] = 'hidden';
+	this.mapDiv.style['position'] = 'fixed';
+	this.mapDiv.style['left'] = 0;
+	this.mapDiv.style['top'] = 0;
+	this.mapDiv.style['width'] = '480px';
+	this.mapDiv.style['height'] = '360px';
+	document.body.appendChild(this.mapDiv);
+
+	this.map = new ol.Map({
+		target: this.mapDiv,
+		renderer: 'canvas',
+		view: new ol.View({
+			zoom: 3,
+			center: loc
+		}),
+		layers: [
+			new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'sat'})}),
+			new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'osm'})})
+			]
+	});
+
+	this.mapCanvas = this.map.getTarget().children[0].children[0];
+}
+
+StageMorph.prototype.originalDrawOn = StageMorph.prototype.drawOn;
+StageMorph.prototype.drawOn = function (aCanvas, aRect) {
+	this.originalDrawOn(aCanvas, aRect);
+    var rectangle, area, delta, src, context, w, h, sl, st, ws, hs;
+    if (!this.isVisible) {
+        return null;
+    }
+    rectangle = aRect || this.bounds;
+    area = rectangle.intersect(this.bounds).round();
+    if (area.extent().gt(new Point(0, 0))) {
+        delta = this.position().neg();
+        src = area.copy().translateBy(delta).round();
+        context = aCanvas.getContext('2d');
+        context.globalAlpha = this.alpha;
+
+        sl = src.left();
+        st = src.top();
+        w = Math.min(src.width(), this.image.width - sl);
+        h = Math.min(src.height(), this.image.height - st);
+
+        if (w < 1 || h < 1) { return null };
+
+        // map canvas
+		this.mapDiv.style['width'] = this.bounds.width() + 'px';
+		this.mapDiv.style['height'] = this.bounds.height() + 'px';
+        context.save();
+		context.drawImage(
+            this.mapCanvas,
+            src.left(),
+            src.top(),
+            w,
+            h,
+            area.left(),
+            area.top(),
+            w,
+            h
+			)
+        context.restore();
+    }
+};
+
+StageMorph.prototype.referencePos = null;
+
+StageMorph.prototype.mouseScroll = function(y, x) {
+	if (y > 0) {
+		this.map.getView().setZoom(this.map.getView().getZoom() + 1);
+    } else if (y < 0) {
+		this.map.getView().setZoom(Math.max(this.map.getView().getZoom() - 1, 1));
+    }
+	this.changed();
+};
+
+StageMorph.prototype.mouseDownLeft = function(pos) {
+    this.referencePos = pos;
+};
+
+StageMorph.prototype.mouseDownRight = function(pos) {
+    this.referencePos = pos;
+};
+
+StageMorph.prototype.mouseMove = function(pos, button) {
+    deltaX = pos.x - this.referencePos.x;
+    deltaY = pos.y - this.referencePos.y;
+    this.referencePos = pos
+    if (button === 'left') { 
+//        this.controls.panLeft(deltaX / this.dimensions.x / this.scale * 15);
+//        this.controls.panUp(deltaY / this.dimensions.y / this.scale * 10);
+    }
+	this.changed();
+};
 
