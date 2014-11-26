@@ -160,78 +160,116 @@ CellMorph.prototype.drawNew = function () {
     }
 };
 
-
 // Definition of a new API Category
 
 SpriteMorph.prototype.categories.push('api');
 SpriteMorph.prototype.blockColor['api'] = new Color(120, 150, 50);
+
+// Definition of a new OpenLayers Category
+
+SpriteMorph.prototype.categories.push('map');
+SpriteMorph.prototype.blockColor['map'] = new Color(200, 20, 50);
 
 // Block specs
 
 SpriteMorph.prototype.originalInitBlocks = SpriteMorph.prototype.initBlocks;
 SpriteMorph.prototype.initBlocks = function() {
 
-		this.originalInitBlocks();
+	this.originalInitBlocks();
 
-		this.blocks.jsonObject =
-		{
-				type: 'reporter',
-				category: 'api',
-				spec: 'object from JSON %s',
-				defaults: ['{"name":"John","surname":"Doe","age":14}']
-		};
-		this.blocks.objectToJsonString =
-		{
-				type: 'reporter',
-				category: 'api',
-				spec: 'JSON from object %l'
-		};
+	// API
+	this.blocks.jsonObject =
+	{
+		type: 'reporter',
+		category: 'api',
+		spec: 'object from JSON %s',
+		defaults: ['{"name":"John","surname":"Doe","age":14}']
+	};
+	this.blocks.objectToJsonString =
+	{
+		type: 'reporter',
+		category: 'api',
+		spec: 'JSON from object %l'
+	};
 
-		this.blocks.newAssociation =
-		{
-				type: 'reporter',
-				category: 'api',
-				spec: '%s → %s'
-		};
-		this.blocks.setValue =
-		{
-				type: 'command',
-				category: 'api',
-				spec: 'set value of %s to %s'
-		};
-		this.blocks.getValue =
-		{
-				type: 'reporter',
-				category: 'api',
-				spec: 'value of %s'
-		};
-		this.blocks.associationAt =
-		{
-				type: 'reporter',
-				category: 'api',
-				spec: 'association at %s of object %s'
-		};
-		this.blocks.valueAt =
-		{
-				type: 'reporter',
-				category: 'api',
-				spec: 'value at %s of object %s'
-		};
+	this.blocks.newAssociation =
+	{
+		type: 'reporter',
+		category: 'api',
+		spec: '%s → %s'
+	};
+	this.blocks.setValue =
+	{
+		type: 'command',
+		category: 'api',
+		spec: 'set value of %s to %s'
+	};
+	this.blocks.getValue =
+	{
+		type: 'reporter',
+		category: 'api',
+		spec: 'value of %s'
+	};
+	this.blocks.associationAt =
+	{
+		type: 'reporter',
+		category: 'api',
+		spec: 'association at %s of object %s'
+	};
+	this.blocks.valueAt =
+	{
+		type: 'reporter',
+		category: 'api',
+		spec: 'value at %s of object %s'
+	};
 
-		this.blocks.apiCall =
-		{
-				type: 'reporter',
-				category: 'api',
-				spec: '%method at %protocol %s with parameters %mult%s',
-				defaults: ['GET', 'http://', null, null]
-		};
-		this.blocks.proxiedApiCall =
-		{
-				type: 'reporter',
-				category: 'api',
-				spec: 'proxied %method at %protocol %s with parameters %mult%s',
-				defaults: ['GET', 'http://', null, null]
-		};
+	this.blocks.apiCall =
+	{
+		type: 'reporter',
+		category: 'api',
+		spec: '%method at %protocol %s with parameters %mult%s',
+		defaults: ['GET', 'http://', null, null]
+	};
+	this.blocks.proxiedApiCall =
+	{
+		type: 'reporter',
+		category: 'api',
+		spec: 'proxied %method at %protocol %s with parameters %mult%s',
+		defaults: ['GET', 'http://', null, null]
+	};
+
+	// Maps
+	this.blocks.showMap =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'show map'
+	};
+	this.blocks.hideMap =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'hide map'
+	};
+	this.blocks.showMarkers =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'show markers'
+	};
+	this.blocks.hideMarkers =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'hide markers'
+	};
+	this.blocks.addMarker =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'add marker %clr at lat: %n long: %n',
+		defaults: [null, 41.359827, 2.061749]
+	};
 }
 
 SpriteMorph.prototype.initBlocks();
@@ -240,35 +278,44 @@ SpriteMorph.prototype.initBlocks();
 
 SpriteMorph.prototype.originalBlockTemplates = SpriteMorph.prototype.blockTemplates;
 SpriteMorph.prototype.blockTemplates = function(category) {
-		var myself = this;
+	var myself = this;
 
-		var blocks = myself.originalBlockTemplates(category); 
+	var blocks = myself.originalBlockTemplates(category); 
 
-		function blockBySelector(selector) {
-				var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
-				newBlock.isTemplate = true;
-				return newBlock;
-		};
+	function blockBySelector(selector) {
+		var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
+		newBlock.isTemplate = true;
+		return newBlock;
+	};
 
-		if (category === 'api') {
-				// Actual API access blocks
-				blocks.push('-');
-				// JSON and Associations
-				blocks.push(blockBySelector('jsonObject'));
-				blocks.push(blockBySelector('objectToJsonString'));
-				blocks.push('-');
-				blocks.push(blockBySelector('newAssociation'));
-				blocks.push(blockBySelector('setValue'));
-				blocks.push(blockBySelector('getValue'));
-				blocks.push(blockBySelector('associationAt'));
-				blocks.push(blockBySelector('valueAt'));
-				blocks.push('-');
-				// API Access
-				blocks.push(blockBySelector('apiCall'));
-				blocks.push(blockBySelector('proxiedApiCall'));
-		};
+	if (category === 'api') {
+		// Actual API access blocks
+		blocks.push('-');
+		// JSON and Associations
+		blocks.push(blockBySelector('jsonObject'));
+		blocks.push(blockBySelector('objectToJsonString'));
+		blocks.push('-');
+		blocks.push(blockBySelector('newAssociation'));
+		blocks.push(blockBySelector('setValue'));
+		blocks.push(blockBySelector('getValue'));
+		blocks.push(blockBySelector('associationAt'));
+		blocks.push(blockBySelector('valueAt'));
+		blocks.push('-');
+		// API Access
+		blocks.push(blockBySelector('apiCall'));
+		blocks.push(blockBySelector('proxiedApiCall'));
+	};
 
-		return blocks;
+	if (category === 'map') {
+		blocks.push(blockBySelector('showMap'));
+		blocks.push(blockBySelector('hideMap'));
+		blocks.push(blockBySelector('showMarkers'));
+		blocks.push(blockBySelector('hideMarkers'));
+		blocks.push('-');
+		blocks.push(blockBySelector('addMarker'));
+	}
+
+	return blocks;
 }
 
 // OpenLayers Stage
@@ -278,7 +325,7 @@ StageMorph.prototype.init = function (globals) {
 	this.originalInit(globals);
 	var myself = this;
 
-	var loc = ol.proj.transform([41.359827, 2.061749], 'EPSG:4326', 'EPSG:3857');
+	var loc = ol.proj.transform([2.061749, 41.359827], 'EPSG:4326', 'EPSG:3857');
 
 	this.mapDiv = document.createElement('div');
 	this.mapDiv.style['visibility'] = 'hidden';
@@ -289,6 +336,20 @@ StageMorph.prototype.init = function (globals) {
 	this.mapDiv.style['height'] = '360px';
 	document.body.appendChild(this.mapDiv);
 
+	var markersSource = new ol.source.Vector({
+		features: []
+	});
+
+	var markersLayer = new ol.layer.Vector({
+		style: 'Markers',
+		source: markersSource
+	});
+
+	var layers = [ 
+		new ol.layer.Tile({style: 'Satellite', source: new ol.source.MapQuest({layer: 'sat'})}),
+		new ol.layer.Tile({style: 'Road', source: new ol.source.MapQuest({layer: 'osm'})}),
+		markersLayer ];
+
 	this.map = new ol.Map({
 		target: this.mapDiv,
 		renderer: 'canvas',
@@ -296,13 +357,14 @@ StageMorph.prototype.init = function (globals) {
 			zoom: 3,
 			center: loc
 		}),
-		layers: [
-			new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'sat'})}),
-			new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'osm'})})
-			]
+		layers: layers
 	});
 
-	this.mapCanvas = this.map.getTarget().children[0].children[0];
+	this.map.layers = layers;
+	this.map.markers = markersSource;
+	this.map.markersLayer = markersLayer;
+	this.map.canvas = this.map.getTarget().children[0].children[0];
+	this.map.visible = false;
 }
 
 StageMorph.prototype.originalDrawOn = StageMorph.prototype.drawOn;
@@ -328,33 +390,37 @@ StageMorph.prototype.drawOn = function (aCanvas, aRect) {
         if (w < 1 || h < 1) { return null };
 
         // map canvas
-		this.mapDiv.style['width'] = this.bounds.width() + 'px';
-		this.mapDiv.style['height'] = this.bounds.height() + 'px';
-        context.save();
-		context.drawImage(
-            this.mapCanvas,
-            src.left(),
-            src.top(),
-            w,
-            h,
-            area.left(),
-            area.top(),
-            w,
-            h
+		if (this.map.visible) {
+			this.mapDiv.style['width'] = this.bounds.width() + 'px';
+			this.mapDiv.style['height'] = this.bounds.height() + 'px';
+			context.save();
+			context.drawImage(
+				this.map.canvas,
+				src.left(),
+				src.top(),
+				w,
+				h,
+				area.left(),
+				area.top(),
+				w,
+				h
 			)
-        context.restore();
+			context.restore();
+		}
     }
 };
 
 StageMorph.prototype.referencePos = null;
 
 StageMorph.prototype.mouseScroll = function(y, x) {
-	if (y > 0) {
-		this.map.getView().setZoom(Math.min(this.map.getView().getZoom() + 1, 20));
-    } else if (y < 0) {
-		this.map.getView().setZoom(Math.max(this.map.getView().getZoom() - 1, 1));
-    }
-	this.changed();
+	if (this.map.visible) {
+		if (y > 0) {
+			this.map.getView().setZoom(Math.min(this.map.getView().getZoom() + 1, 20));
+   		} else if (y < 0) {
+			this.map.getView().setZoom(Math.max(this.map.getView().getZoom() - 1, 1));
+	    }
+		this.changed();
+	}
 };
 
 StageMorph.prototype.mouseDownLeft = function(pos) {
@@ -366,16 +432,17 @@ StageMorph.prototype.mouseDownRight = function(pos) {
 };
 
 StageMorph.prototype.mouseMove = function(pos, button) {
-    deltaX = this.referencePos.x - pos.x;
-    deltaY = pos.y - this.referencePos.y;
-    this.referencePos = pos;
-	var view = this.map.getView();
-	var xFactor = Math.pow(2,view.getZoom()) / 4;
-	var yFactor = Math.pow(2,view.getZoom()) / 3;
-	view.setCenter(
-		[view.getCenter()[0] + deltaX / this.dimensions.x / this.scale / xFactor * 10000000,
-		 view.getCenter()[1] + deltaY / this.dimensions.y / this.scale / yFactor * 10000000]
-	)
-	this.changed();
+	if (this.map.visible) {
+	    deltaX = this.referencePos.x - pos.x;
+	    deltaY = pos.y - this.referencePos.y;
+		this.referencePos = pos;
+		var view = this.map.getView();
+		var xFactor = Math.pow(2, view.getZoom()) / 4;
+		var yFactor = Math.pow(2, view.getZoom()) / 3;
+		view.setCenter(
+			[view.getCenter()[0] + deltaX / this.dimensions.x / xFactor * 10000000,
+			 view.getCenter()[1] + deltaY / this.dimensions.y / yFactor * 10000000]
+		)
+		this.changed();
+	}
 };
-
