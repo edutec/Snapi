@@ -1,7 +1,6 @@
 // SpriteBubbleMorph.proxy.dataAsMorph proxy
 
 SpriteBubbleMorph.prototype.originalDataAsMorph = SpriteBubbleMorph.prototype.dataAsMorph;
-
 SpriteBubbleMorph.prototype.dataAsMorph = function (data) {
 		if (data instanceof Association) {
 				contents = new AssociationWatcherMorph(data);
@@ -170,7 +169,6 @@ SpriteMorph.prototype.blockColor['api'] = new Color(120, 150, 50);
 // Block specs
 
 SpriteMorph.prototype.originalInitBlocks = SpriteMorph.prototype.initBlocks;
-
 SpriteMorph.prototype.initBlocks = function() {
 
 		this.originalInitBlocks();
@@ -241,9 +239,6 @@ SpriteMorph.prototype.initBlocks();
 // blockTemplates proxy
 
 SpriteMorph.prototype.originalBlockTemplates = SpriteMorph.prototype.blockTemplates;
-
-// Definition of our new primitive blocks
-
 SpriteMorph.prototype.blockTemplates = function(category) {
 		var myself = this;
 
@@ -355,7 +350,7 @@ StageMorph.prototype.referencePos = null;
 
 StageMorph.prototype.mouseScroll = function(y, x) {
 	if (y > 0) {
-		this.map.getView().setZoom(this.map.getView().getZoom() + 1);
+		this.map.getView().setZoom(Math.min(this.map.getView().getZoom() + 1, 20));
     } else if (y < 0) {
 		this.map.getView().setZoom(Math.max(this.map.getView().getZoom() - 1, 1));
     }
@@ -371,13 +366,16 @@ StageMorph.prototype.mouseDownRight = function(pos) {
 };
 
 StageMorph.prototype.mouseMove = function(pos, button) {
-    deltaX = pos.x - this.referencePos.x;
+    deltaX = this.referencePos.x - pos.x;
     deltaY = pos.y - this.referencePos.y;
-    this.referencePos = pos
-    if (button === 'left') { 
-//        this.controls.panLeft(deltaX / this.dimensions.x / this.scale * 15);
-//        this.controls.panUp(deltaY / this.dimensions.y / this.scale * 10);
-    }
+    this.referencePos = pos;
+	var view = this.map.getView();
+	var xFactor = Math.pow(2,view.getZoom()) / 4;
+	var yFactor = Math.pow(2,view.getZoom()) / 3;
+	view.setCenter(
+		[view.getCenter()[0] + deltaX / this.dimensions.x / this.scale / xFactor * 10000000,
+		 view.getCenter()[1] + deltaY / this.dimensions.y / this.scale / yFactor * 10000000]
+	)
 	this.changed();
 };
 

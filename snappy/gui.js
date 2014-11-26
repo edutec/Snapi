@@ -281,15 +281,13 @@ IDE_Morph.prototype.createLogo = function () {
 		this.add(this.logo);
 };
 
-/*
-// Allow dropping of JsonInspectorMorphs
+// Allow dropping of InspectorMorphs
 IDE_Morph.prototype.originalInit = IDE_Morph.prototype.init; 
 IDE_Morph.prototype.init = function () {
 	this.originalInit();
 
 	originalWantsDropOf = this.wantsDropOf;
 	this.wantsDropOf = function (morph) {
-		return (originalWantsDropOf() || morph instanceof JsonInspectorMorph);
+		return (originalWantsDropOf() || morph instanceof InspectorMorph);
     };
 }
-*/
