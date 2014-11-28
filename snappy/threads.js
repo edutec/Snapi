@@ -95,47 +95,77 @@ Process.prototype.proxiedApiCall = function (method, protocol, url, parameters) 
 Process.prototype.showMap = function() {
 	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
 	stage.map.visible = true;
-	stage.changed();
+	stage.delayedRefresh();
 }
 
 Process.prototype.hideMap = function() {
 	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
 	stage.map.visible = false;
-	stage.changed();
+	stage.delayedRefresh();
+}
+
+Process.prototype.switchView = function(view) {
+	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
+
+	if (stage.map.currentLayer != stage.map.layers[view]) {
+		stage.map.layers[view].setVisible(true);
+		stage.map.currentLayer.setVisible(false);
+		stage.map.currentLayer = stage.map.layers[view];
+
+		stage.delayedRefresh();
+	}
+}
+
+Process.prototype.setMapCenter = function(lat, lng) {
+	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
+	stage.map.getView().setCenter(ol.proj.transform([lng, lat], 'EPSG:4326', 'EPSG:3857'));
+	stage.delayedRefresh();
+}
+
+Process.prototype.setMapZoom = function(level) {
+	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
+	stage.map.getView().setZoom(Math.max(Math.min(level, 20),1));
+	stage.delayedRefresh(300);
 }
 
 Process.prototype.showMarkers = function() {
 	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
-	stage.map.markersLayer.setVisible(true);
-	stage.changed();
+	stage.map.layers.markers.setVisible(true);
+	stage.delayedRefresh();
 }
 
 Process.prototype.hideMarkers = function() {
 	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
-	stage.map.markersLayer.setVisible(false);
-	stage.changed();
+	stage.map.layers.markers.setVisible(false);
+	stage.delayedRefresh();
+}
+
+Process.prototype.clearMarkers = function() {
+	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
+	stage.map.markers.clear();
+	stage.delayedRefresh();
 }
 
 Process.prototype.addMarker = function(color, lat, lng) {
 	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
 	var iconFeature = new ol.Feature({
 		geometry: new ol.geom.Point(ol.proj.transform([lng, lat], 'EPSG:4326', 'EPSG:3857'))
-		//name: 'Null Island', // allows to add data at will, not sure what to use it for
+		// name: 'Whatever' 
+		// This structure allows to add properties at will, not sure what to use it for.
+		// Would there be a way to capture clicks on markers? If so, this would be useful.
 	});
 
 	var iconStyle = new ol.style.Style({
 		image: new ol.style.Circle({
 			radius: 5,
 			fill: null,
-			stroke: new ol.style.Stroke({ color: 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')', width: 2 })
+			stroke: new ol.style.Stroke({ color: 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')', width: 3 })
 		})
 	});
 
 	iconFeature.setStyle(iconStyle);
 	stage.map.markers.addFeature(iconFeature);
 	
-	// should be a callback being fired when the feature has been added!
-	stage.changed();
-	stage.drawNew();
+	stage.delayedRefresh();
 }
 

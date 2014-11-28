@@ -251,6 +251,31 @@ SpriteMorph.prototype.initBlocks = function() {
 		category: 'map',
 		spec: 'hide map'
 	};
+	this.blocks.switchView =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'switch view to %mapView'
+	};
+	this.blocks.setMapCenter =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'set center at lat: %n long: %n'
+	};
+	this.blocks.setMapZoom =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'set zoom level to %zoomLevel'
+	};
+	this.blocks.addMarker =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'add marker %clr at lat: %n long: %n',
+		defaults: [null, 41.359827, 2.061749]
+	};
 	this.blocks.showMarkers =
 	{
 		type: 'command',
@@ -263,12 +288,11 @@ SpriteMorph.prototype.initBlocks = function() {
 		category: 'map',
 		spec: 'hide markers'
 	};
-	this.blocks.addMarker =
+	this.blocks.clearMarkers =
 	{
 		type: 'command',
 		category: 'map',
-		spec: 'add marker %clr at lat: %n long: %n',
-		defaults: [null, 41.359827, 2.061749]
+		spec: 'remove all markers'
 	};
 }
 
@@ -309,10 +333,15 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 	if (category === 'map') {
 		blocks.push(blockBySelector('showMap'));
 		blocks.push(blockBySelector('hideMap'));
-		blocks.push(blockBySelector('showMarkers'));
-		blocks.push(blockBySelector('hideMarkers'));
+		blocks.push('-');
+		blocks.push(blockBySelector('switchView'));
+		blocks.push(blockBySelector('setMapCenter'));
+		blocks.push(blockBySelector('setMapZoom'));
 		blocks.push('-');
 		blocks.push(blockBySelector('addMarker'));
+		blocks.push(blockBySelector('showMarkers'));
+		blocks.push(blockBySelector('hideMarkers'));
+		blocks.push(blockBySelector('clearMarkers'));
 	}
 
 	return blocks;
@@ -327,6 +356,9 @@ StageMorph.prototype.init = function (globals) {
 
 	var loc = ol.proj.transform([2.061749, 41.359827], 'EPSG:4326', 'EPSG:3857');
 
+	// Apparently, we need to create a stupid div on the DOM, even if it's not visible,
+	// so that the canvas shows the map and allows us to interact with it
+
 	this.mapDiv = document.createElement('div');
 	this.mapDiv.style['visibility'] = 'hidden';
 	this.mapDiv.style['position'] = 'fixed';
@@ -340,15 +372,11 @@ StageMorph.prototype.init = function (globals) {
 		features: []
 	});
 
-	var markersLayer = new ol.layer.Vector({
-		style: 'Markers',
-		source: markersSource
-	});
-
-	var layers = [ 
-		new ol.layer.Tile({style: 'Satellite', source: new ol.source.MapQuest({layer: 'sat'})}),
-		new ol.layer.Tile({style: 'Road', source: new ol.source.MapQuest({layer: 'osm'})}),
-		markersLayer ];
+	var layers = { 
+		satellite:	new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'sat'})}),
+		road:		new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'osm'})}),
+		markers:	new ol.layer.Vector({ source: markersSource }) 
+	};
 
 	this.map = new ol.Map({
 		target: this.mapDiv,
@@ -357,12 +385,12 @@ StageMorph.prototype.init = function (globals) {
 			zoom: 3,
 			center: loc
 		}),
-		layers: layers
+		layers: [ layers.satellite, layers.road, layers.markers ]
 	});
 
 	this.map.layers = layers;
+	this.map.currentLayer = this.map.layers.road;
 	this.map.markers = markersSource;
-	this.map.markersLayer = markersLayer;
 	this.map.canvas = this.map.getTarget().children[0].children[0];
 	this.map.visible = false;
 }
@@ -389,22 +417,27 @@ StageMorph.prototype.drawOn = function (aCanvas, aRect) {
 
         if (w < 1 || h < 1) { return null };
 
-        // map canvas
+		// map canvas
+	
 		if (this.map.visible) {
-			this.mapDiv.style['width'] = this.bounds.width() + 'px';
-			this.mapDiv.style['height'] = this.bounds.height() + 'px';
+			ws = w / this.scale;
+			hs = h / this.scale;
+			this.mapDiv.style['width'] = w + 'px';
+			this.mapDiv.style['height'] = h + 'px';
 			context.save();
-			context.drawImage(
-				this.map.canvas,
-				src.left(),
-				src.top(),
-				w,
-				h,
-				area.left(),
-				area.top(),
-				w,
-				h
-			)
+
+			context.scale(this.scale, this.scale);
+            context.drawImage(
+                this.map.canvas,
+                src.left() / this.scale,
+                src.top() / this.scale,
+                ws,
+                hs,
+                area.left() / this.scale,
+                area.top() / this.scale,
+                ws,
+                hs
+            );
 			context.restore();
 		}
     }
@@ -419,7 +452,7 @@ StageMorph.prototype.mouseScroll = function(y, x) {
    		} else if (y < 0) {
 			this.map.getView().setZoom(Math.max(this.map.getView().getZoom() - 1, 1));
 	    }
-		this.changed();
+		this.delayedRefresh();
 	}
 };
 
@@ -443,6 +476,11 @@ StageMorph.prototype.mouseMove = function(pos, button) {
 			[view.getCenter()[0] + deltaX / this.dimensions.x / xFactor * 10000000,
 			 view.getCenter()[1] + deltaY / this.dimensions.y / yFactor * 10000000]
 		)
-		this.changed();
+		this.delayedRefresh();
 	}
 };
+
+StageMorph.prototype.delayedRefresh = function(delay) {
+	var myself = this;		
+	setTimeout(function(){ myself.changed() }, delay?delay:100)
+}
