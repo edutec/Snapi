@@ -23,7 +23,17 @@ Process.prototype.associationAt = function (key, snapObject) {
 };
 
 Process.prototype.valueAt = function (key, snapObject) {
-		return this.associationAt(key, snapObject).value;
+		var value;
+		try {
+				if (typeof snapObject == 'string') { 
+						value = JSON.stringify(JSON.parse(snapObject)[key]);
+				} else if (snapObject instanceof List && snapObject.length() > 0) {
+						value = this.associationAt(key, snapObject).value;
+				}
+		} catch (err) {
+				// This doesn't look like something JSON-inspectable, ignore it
+		};
+		return value;
 };
 
 Process.prototype.jsonObject = function (jsonString) {
@@ -116,7 +126,7 @@ Process.prototype.switchView = function(view) {
 	}
 }
 
-Process.prototype.setMapCenter = function(lat, lng) {
+Process.prototype.setMapCenter = function(lng, lat) {
 	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
 	stage.map.getView().setCenter(ol.proj.transform([lng, lat], 'EPSG:4326', 'EPSG:3857'));
 	stage.delayedRefresh();
@@ -146,7 +156,7 @@ Process.prototype.clearMarkers = function() {
 	stage.delayedRefresh();
 }
 
-Process.prototype.addMarker = function(color, lat, lng) {
+Process.prototype.addMarker = function(color, lng, lat) {
 	var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
 	var iconFeature = new ol.Feature({
 		geometry: new ol.geom.Point(ol.proj.transform([lng, lat], 'EPSG:4326', 'EPSG:3857'))

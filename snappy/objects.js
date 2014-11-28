@@ -198,24 +198,6 @@ SpriteMorph.prototype.initBlocks = function() {
 		category: 'api',
 		spec: '%s → %s'
 	};
-	this.blocks.setValue =
-	{
-		type: 'command',
-		category: 'api',
-		spec: 'set value of %s to %s'
-	};
-	this.blocks.getValue =
-	{
-		type: 'reporter',
-		category: 'api',
-		spec: 'value of %s'
-	};
-	this.blocks.associationAt =
-	{
-		type: 'reporter',
-		category: 'api',
-		spec: 'association at %s of object %s'
-	};
 	this.blocks.valueAt =
 	{
 		type: 'reporter',
@@ -261,7 +243,8 @@ SpriteMorph.prototype.initBlocks = function() {
 	{
 		type: 'command',
 		category: 'map',
-		spec: 'set center at lat: %n long: %n'
+		spec: 'set center at long: %n lat: %n',
+		defaults: [2.061749, 41.359827]
 	};
 	this.blocks.setMapZoom =
 	{
@@ -273,8 +256,8 @@ SpriteMorph.prototype.initBlocks = function() {
 	{
 		type: 'command',
 		category: 'map',
-		spec: 'add marker %clr at lat: %n long: %n',
-		defaults: [null, 41.359827, 2.061749]
+		spec: 'add marker %clr at long: %n lat: %n',
+		defaults: [null, 2.061749, 41.359827]
 	};
 	this.blocks.showMarkers =
 	{
@@ -320,9 +303,6 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 		blocks.push(blockBySelector('objectToJsonString'));
 		blocks.push('-');
 		blocks.push(blockBySelector('newAssociation'));
-		blocks.push(blockBySelector('setValue'));
-		blocks.push(blockBySelector('getValue'));
-		blocks.push(blockBySelector('associationAt'));
 		blocks.push(blockBySelector('valueAt'));
 		blocks.push('-');
 		// API Access
@@ -425,7 +405,6 @@ StageMorph.prototype.drawOn = function (aCanvas, aRect) {
 			this.mapDiv.style['width'] = w + 'px';
 			this.mapDiv.style['height'] = h + 'px';
 			context.save();
-
 			context.scale(this.scale, this.scale);
             context.drawImage(
                 this.map.canvas,
