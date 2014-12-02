@@ -177,6 +177,28 @@ SpriteMorph.prototype.initBlocks = function() {
 
 	this.originalInitBlocks();
 
+	// Operators
+	this.blocks.colorFromPicker =
+	{
+		type: 'reporter',
+		category: 'operators',
+		spec: 'color %clr'
+	}
+	this.blocks.colorFromRGB =
+	{
+		type: 'reporter',
+		category: 'operators',
+		spec: 'color r: %n g: %n b: %n',
+		defaults: [250,128,64]
+	};
+	this.blocks.colorFromHSV =
+	{
+		type: 'reporter',
+		category: 'operators',
+		spec: 'color h: %n s: %n v: %n',
+		defaults: [0.3,0.7,0.9]
+	}
+
 	// API
 	this.blocks.jsonObject =
 	{
@@ -246,17 +268,35 @@ SpriteMorph.prototype.initBlocks = function() {
 		spec: 'set center at long: %n lat: %n',
 		defaults: [2.061749, 41.359827]
 	};
+	this.blocks.getCurrentLongitude =
+	{
+		type: 'reporter',
+		category: 'map',
+		spec: 'current longitude',
+	};
+	this.blocks.getCurrentLatitude =
+	{
+		type: 'reporter',
+		category: 'map',
+		spec: 'current latitude',
+	};
 	this.blocks.setMapZoom =
 	{
 		type: 'command',
 		category: 'map',
 		spec: 'set zoom level to %zoomLevel'
 	};
+	this.blocks.getMapZoom =
+	{
+		type: 'reporter',
+		category: 'map',
+		spec: 'zoom level'
+	};
 	this.blocks.addMarker =
 	{
 		type: 'command',
 		category: 'map',
-		spec: 'add marker %clr at long: %n lat: %n',
+		spec: '%clr marker at long: %n lat: %n value: %s',
 		defaults: [null, 2.061749, 41.359827]
 	};
 	this.blocks.showMarkers =
@@ -295,9 +335,14 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 		return newBlock;
 	};
 
-	if (category === 'api') {
-		// Actual API access blocks
+	if (category === 'operators') {
 		blocks.push('-');
+		blocks.push(blockBySelector('colorFromPicker'));
+		blocks.push(blockBySelector('colorFromRGB'));
+		blocks.push(blockBySelector('colorFromHSV'));
+	}
+
+	if (category === 'api') {
 		// JSON and Associations
 		blocks.push(blockBySelector('jsonObject'));
 		blocks.push(blockBySelector('objectToJsonString'));
@@ -316,7 +361,10 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 		blocks.push('-');
 		blocks.push(blockBySelector('switchView'));
 		blocks.push(blockBySelector('setMapCenter'));
+		blocks.push(blockBySelector('getCurrentLongitude'));
+		blocks.push(blockBySelector('getCurrentLatitude'));
 		blocks.push(blockBySelector('setMapZoom'));
+		blocks.push(blockBySelector('getMapZoom'));
 		blocks.push('-');
 		blocks.push(blockBySelector('addMarker'));
 		blocks.push(blockBySelector('showMarkers'));
@@ -436,6 +484,12 @@ StageMorph.prototype.mouseScroll = function(y, x) {
 };
 
 StageMorph.prototype.mouseDownLeft = function(pos) {
+  	var feature = this.map.forEachFeatureAtPixel([(pos.x - this.left()) / this.scale, (pos.y - this.top()) / this.scale], function(feature, layer) { return feature });
+	if (feature) {
+    	var geometry = feature.getGeometry();
+    	var coord = geometry.getCoordinates();
+		console.log(feature.get('value'));
+    }
     this.referencePos = pos;
 };
 
