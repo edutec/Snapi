@@ -198,6 +198,36 @@ Process.prototype.addMarker = function(color, lng, lat, value) {
 		stage.delayedRefresh();
 }
 
+Process.prototype.simpleAddMarker = function(color, loc, value) {
+		if (loc.length < 1) { return };
+
+		if (loc instanceof Array) {
+			finalLoc = loc;
+		} else if (loc instanceof List) {
+			finalLoc = loc.asArray();
+		} else {
+			try {
+				finalLoc = JSON.parse(loc);
+			} catch(error) {
+				throw error;
+			}
+		}
+
+		function flatten(array) {
+			if (array[0] instanceof Array) {
+				return flatten(array[0])
+			} else if (array[0] instanceof List) {
+				return flatten(array[0].asArray())
+			} else {
+				return array
+			}
+		}
+		
+		finalLoc = flatten(finalLoc);
+
+		this.addMarker(color, finalLoc[0], finalLoc[1], value);
+}
+
 // Colors
 
 Process.prototype.colorFromRGB = function(r,g,b) {

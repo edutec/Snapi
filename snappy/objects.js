@@ -296,8 +296,14 @@ SpriteMorph.prototype.initBlocks = function() {
 	{
 		type: 'command',
 		category: 'map',
-		spec: '%clr marker at long: %n lat: %n value: %s',
+		spec: '%clr marker at long %n lat %n value %s',
 		defaults: [null, 2.061749, 41.359827, 'Citilab']
+	};
+	this.blocks.simpleAddMarker =
+	{
+		type: 'command',
+		category: 'map',
+		spec: '%clr marker at %l value %s'
 	};
 	this.blocks.showMarkers =
 	{
@@ -367,6 +373,7 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 		blocks.push(blockBySelector('getMapZoom'));
 		blocks.push('-');
 		blocks.push(blockBySelector('addMarker'));
+		blocks.push(blockBySelector('simpleAddMarker'));
 		blocks.push(blockBySelector('showMarkers'));
 		blocks.push(blockBySelector('hideMarkers'));
 		blocks.push(blockBySelector('clearMarkers'));
