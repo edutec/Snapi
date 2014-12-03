@@ -297,7 +297,7 @@ SpriteMorph.prototype.initBlocks = function() {
 		type: 'command',
 		category: 'map',
 		spec: '%clr marker at long: %n lat: %n value: %s',
-		defaults: [null, 2.061749, 41.359827]
+		defaults: [null, 2.061749, 41.359827, 'Citilab']
 	};
 	this.blocks.showMarkers =
 	{
@@ -470,6 +470,13 @@ StageMorph.prototype.drawOn = function (aCanvas, aRect) {
     }
 };
 
+StageMorph.prototype.featureAtPosition = function(pos) {
+	return this.map.forEachFeatureAtPixel(
+		[(pos.x - this.left()) / this.scale, (pos.y - this.top()) / this.scale], 
+		function(feature, layer) { return feature }
+	);
+}
+
 StageMorph.prototype.referencePos = null;
 
 StageMorph.prototype.mouseScroll = function(y, x) {
@@ -484,21 +491,54 @@ StageMorph.prototype.mouseScroll = function(y, x) {
 };
 
 StageMorph.prototype.mouseDownLeft = function(pos) {
-  	var feature = this.map.forEachFeatureAtPixel([(pos.x - this.left()) / this.scale, (pos.y - this.top()) / this.scale], function(feature, layer) { return feature });
-	if (feature) {
-    	var geometry = feature.getGeometry();
-    	var coord = geometry.getCoordinates();
-		console.log(feature.get('value'));
-    }
     this.referencePos = pos;
+	var feature = this.featureAtPosition(pos);
+	if (feature) {
+    	var geometry = feature.getGeometry(),
+			value = feature.get('value');
+		if (value) {
+			var bubble = new SpeechBubbleMorph(value);
+			bubble.popUp(this.world(), pos, true);
+		}
+
+    }
 };
 
 StageMorph.prototype.mouseDownRight = function(pos) {
     this.referencePos = pos;
 };
 
+StageMorph.prototype.originalUserMenu = StageMorph.prototype.userMenu;
+StageMorph.prototype.userMenu = function() {
+	var myself = this,
+		feature = this.featureAtPosition(this.referencePos),
+		menu;
+
+	if (feature) {
+		menu = new MenuMorph(this);
+		menu.addItem(
+			'remove', 
+			function(){ 
+				myself.map.markers.removeFeature(feature);
+				myself.delayedRefresh();
+			});
+		menu.addItem(
+			'export...',
+			function () {
+				window.open(
+					'data:text/plain;charset=utf-8,' +
+					encodeURIComponent(feature.get('value'))
+				);
+			});
+	} else {
+		menu = this.originalUserMenu();
+	}
+	
+	return menu;
+}
+
 StageMorph.prototype.mouseMove = function(pos, button) {
-	if (this.map.visible) {
+  		if (this.map.visible) {
 	    deltaX = this.referencePos.x - pos.x;
 	    deltaY = pos.y - this.referencePos.y;
 		this.referencePos = pos;

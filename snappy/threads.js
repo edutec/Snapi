@@ -25,13 +25,14 @@ Process.prototype.associationAt = function (key, snapObject) {
 Process.prototype.valueAt = function (key, snapObject) {
 		var value;
 		try {
-				if (typeof snapObject == 'string') { 
-						value = JSON.stringify(JSON.parse(snapObject)[key]);
-				} else if (snapObject instanceof List && snapObject.length() > 0) {
-						value = this.associationAt(key, snapObject).value;
-				}
+			if (typeof snapObject == 'string') { 
+				value = JSON.stringify(JSON.parse(snapObject)[key]);
+				value = value.replace(/^"/g,'').replace(/"$/g,'');
+			} else if (snapObject instanceof List && snapObject.length() > 0) {
+				value = this.associationAt(key, snapObject).value;
+			}
 		} catch (err) {
-				// This doesn't look like something JSON-inspectable, ignore it
+			// This doesn't look like something JSON-inspectable, ignore it
 		};
 		return value;
 };
