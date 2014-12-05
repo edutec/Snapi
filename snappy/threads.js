@@ -1,10 +1,10 @@
 // API category
 
-Process.prototype.newAssociation = function(key,value) {
+Process.prototype.newAssociation = function(key, value) {
 		return new Association(key,value);
 };
 
-Process.prototype.setValue = function(association,value) {
+Process.prototype.setValue = function(association, value) {
 		association.setValue(value);
 };
 
@@ -282,3 +282,8 @@ Process.prototype.originalReportListContainsItem = Process.prototype.reportListC
 Process.prototype.reportListContainsItem = function (list, element) {
 	return this.originalReportListContainsItem(this.tryToParseJsonList(list), element);
 };
+
+Process.prototype.originalDoForEach = Process.prototype.doForEach; 
+Process.prototype.doForEach = function (upvar, list, script) {
+	return this.originalDoForEach(upvar, this.tryToParseJsonList(list), script)
+}

@@ -34,8 +34,6 @@
                 world.worldCanvas.focus();
 				new IDE_Morph().openIn(world);
 				setInterval(loop, 10);
-				map = world.children[0].stage.map;
-				view = map.getView();
 			};
 			function loop() {
 				world.doOneCycle();

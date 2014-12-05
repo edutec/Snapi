@@ -177,6 +177,10 @@ SpriteMorph.prototype.initBlocks = function() {
 
 	this.originalInitBlocks();
 
+	// Control
+	this.blocks.doForEach.category = 'control';
+	this.blocks.doForEach.dev = 'false';
+
 	// Operators
 	this.blocks.colorFromPicker =
 	{
@@ -341,6 +345,9 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 		return newBlock;
 	};
 
+	if (category === 'control') {
+		blocks.push(blockBySelector('doForEach'));
+	}
 	if (category === 'operators') {
 		blocks.push('-');
 		blocks.push(blockBySelector('colorFromPicker'));
@@ -378,7 +385,6 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 		blocks.push(blockBySelector('hideMarkers'));
 		blocks.push(blockBySelector('clearMarkers'));
 	}
-
 	return blocks;
 }
 
@@ -408,8 +414,9 @@ StageMorph.prototype.init = function (globals) {
 	});
 
 	var layers = { 
-		satellite:	new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'sat'})}),
-		road:		new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'osm'})}),
+		political:	new ol.layer.Tile({ source: new ol.source.TileJSON({ url: 'http://api.tiles.mapbox.com/v3/mapbox.geography-class.jsonp' }) }),
+		satellite:	new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'sat'}) }),
+		road:		new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'osm'}) }),
 		markers:	new ol.layer.Vector({ source: markersSource }) 
 	};
 
@@ -420,11 +427,20 @@ StageMorph.prototype.init = function (globals) {
 			zoom: 3,
 			center: loc
 		}),
-		layers: [ layers.satellite, layers.road, layers.markers ]
+		layers: [ layers.satellite, layers.road, layers.political, layers.markers ]
 	});
 
 	this.map.layers = layers;
+
+	for (var property in this.map.layers) {
+		if (this.map.layers.hasOwnProperty(property)) {
+			this.map.layers[property].setVisible(false)
+		}
+	}
+
+	this.map.layers.markers.setVisible(true);
 	this.map.currentLayer = this.map.layers.road;
+	this.map.currentLayer.setVisible(true);
 	this.map.markers = markersSource;
 	this.map.canvas = this.map.getTarget().children[0].children[0];
 	this.map.visible = false;
@@ -501,8 +517,7 @@ StageMorph.prototype.mouseDownLeft = function(pos) {
     this.referencePos = pos;
 	var feature = this.featureAtPosition(pos);
 	if (feature) {
-    	var geometry = feature.getGeometry(),
-			value = feature.get('value');
+    	var value = feature.get('value');
 		if (value) {
 			var bubble = new SpeechBubbleMorph(value);
 			bubble.popUp(this.world(), pos, true);
@@ -514,35 +529,6 @@ StageMorph.prototype.mouseDownLeft = function(pos) {
 StageMorph.prototype.mouseDownRight = function(pos) {
     this.referencePos = pos;
 };
-
-StageMorph.prototype.originalUserMenu = StageMorph.prototype.userMenu;
-StageMorph.prototype.userMenu = function() {
-	var myself = this,
-		feature = this.featureAtPosition(this.referencePos),
-		menu;
-
-	if (feature) {
-		menu = new MenuMorph(this);
-		menu.addItem(
-			'remove', 
-			function(){ 
-				myself.map.markers.removeFeature(feature);
-				myself.delayedRefresh();
-			});
-		menu.addItem(
-			'export...',
-			function () {
-				window.open(
-					'data:text/plain;charset=utf-8,' +
-					encodeURIComponent(feature.get('value'))
-				);
-			});
-	} else {
-		menu = this.originalUserMenu();
-	}
-	
-	return menu;
-}
 
 StageMorph.prototype.mouseMove = function(pos, button) {
   		if (this.map.visible) {
@@ -559,6 +545,54 @@ StageMorph.prototype.mouseMove = function(pos, button) {
 		this.delayedRefresh();
 	}
 };
+
+StageMorph.prototype.originalUserMenu = StageMorph.prototype.userMenu;
+StageMorph.prototype.userMenu = function() {
+	var myself = this,
+		feature = this.featureAtPosition(this.referencePos),
+		menu;
+
+	if (feature) {
+		var loc = ol.proj.transform(feature.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'),
+			menu = new MenuMorph(this);
+		menu.addItem(
+			'remove', 
+			function(){ 
+				myself.map.markers.removeFeature(feature);
+				myself.delayedRefresh();
+			});
+		menu.addLine();
+		menu.addItem(
+			'export...',
+			function () {
+				window.open(
+					'data:text/plain;charset=utf-8,' +
+					encodeURIComponent(feature.get('value'))
+				);
+			});
+		menu.addLine();
+		menu.addItem(
+			'show in OpenStreetMap',
+			function() {
+				window.open('http://www.openstreetmap.org/#map=17/' + loc[1] + '/' + loc[0]);
+			});
+		menu.addItem(
+			'show in GoogleMaps',
+			function() {
+				window.open('https://www.google.es/maps/@' + loc[1] + ',' + loc[0] + ',17z');
+			});
+		menu.addItem(
+			'show in Google StreetView',
+			function() {
+				window.open('http://maps.google.com/maps?q=&layer=c&cbll=' + loc[1] + ',' + loc[0]);
+			});
+
+	} else {
+		menu = this.originalUserMenu();
+	}
+	
+	return menu;
+}
 
 StageMorph.prototype.delayedRefresh = function(delay) {
 	var myself = this;		
