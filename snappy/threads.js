@@ -244,6 +244,10 @@ Process.prototype.colorFromPicker = function(color) {
 		return color;
 }
 
+Process.prototype.colorFromString = function(string) {
+		return this.colorFromHSV(((Math.abs(string.toString().split('').reduce(function(a,b){ a = ((a<<5) - a) + b.charCodeAt(0); return a & a }, 0)) % 255)/255),1,1)
+}
+
 // List modifications to accept JSON arrays
 
 Process.prototype.tryToParseJsonList = function(list) {

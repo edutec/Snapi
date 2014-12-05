@@ -202,6 +202,13 @@ SpriteMorph.prototype.initBlocks = function() {
 		spec: 'color h: %n s: %n v: %n',
 		defaults: [0.3,0.7,0.9]
 	}
+	this.blocks.colorFromString =
+	{
+		type: 'reporter',
+		category: 'operators',
+		spec: 'magic color from %s',
+		defaults: ['Hello!']
+	}
 
 	// API
 	this.blocks.jsonObject =
@@ -353,6 +360,7 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 		blocks.push(blockBySelector('colorFromPicker'));
 		blocks.push(blockBySelector('colorFromRGB'));
 		blocks.push(blockBySelector('colorFromHSV'));
+		blocks.push(blockBySelector('colorFromString'));
 	}
 
 	if (category === 'api') {
