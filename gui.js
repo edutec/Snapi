@@ -69,7 +69,7 @@ SpeechBubbleMorph*/
 
 // Global stuff ////////////////////////////////////////////////////////
 
-modules.gui = '2014-December-01';
+modules.gui = '2014-December-04';
 
 // Declarations
 
@@ -190,7 +190,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
 
     // additional properties:
     this.cloudMsg = null;
-    this.source = SnapCloud.username ? 'cloud' : 'local';
+    this.source = 'local';
     this.serializer = new SnapSerializer();
 
     this.globalVariables = new VariableFrame();
@@ -241,6 +241,9 @@ IDE_Morph.prototype.openIn = function (world) {
             if (usr) {
                 SnapCloud.username = usr.username || null;
                 SnapCloud.password = usr.password || null;
+                if (SnapCloud.username) {
+                    this.source = 'cloud';
+                }
             }
         }
     }
