@@ -291,3 +291,29 @@ IDE_Morph.prototype.init = function () {
 		return (originalWantsDropOf() || morph instanceof InspectorMorph);
     };
 }
+
+// Language
+
+IDE_Morph.prototype.originalSetLanguage = IDE_Morph.prototype.setLanguage;
+IDE_Morph.prototype.setLanguage = function(lang, callback) {
+	var myself = this;
+
+	myself.originalSetLanguage(lang, function() {
+		var translation = document.getElementById('snappy-language'),
+		src = 'snappy/lang-' + lang + '.js',
+		myInnerSelf = this;
+		if (translation) {
+			document.head.removeChild(translation);
+		}
+		if (lang === 'en') {
+			return this.reflectLanguage('en', callback);
+		}
+		translation = document.createElement('script');
+		translation.id = 'snappy-language';
+		translation.onload = function () {
+			myInnerSelf.reflectLanguage(lang, callback);
+		};
+		document.head.appendChild(translation);
+		translation.src = src; 
+	});
+};

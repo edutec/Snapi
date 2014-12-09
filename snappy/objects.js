@@ -207,7 +207,7 @@ SpriteMorph.prototype.initBlocks = function() {
 		type: 'reporter',
 		category: 'operators',
 		spec: 'magic color from %s',
-		defaults: ['Hello!']
+		defaults: [localize('Hello!')]
 	}
 
 	// API
@@ -216,7 +216,7 @@ SpriteMorph.prototype.initBlocks = function() {
 		type: 'reporter',
 		category: 'api',
 		spec: 'object from JSON %s',
-		defaults: ['{"name":"John","surname":"Doe","age":14}']
+		defaults: [localize('{"name":"John","surname":"Doe","age":14}')]
 	};
 	this.blocks.objectToJsonString =
 	{
