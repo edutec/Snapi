@@ -165,7 +165,7 @@ CellMorph.prototype.drawNew = function () {
 SpriteMorph.prototype.categories.push('api');
 SpriteMorph.prototype.blockColor['api'] = new Color(120, 150, 50);
 
-// Definition of a new OpenLayers Category
+// Definition of a new Map Category
 
 SpriteMorph.prototype.categories.push('map');
 SpriteMorph.prototype.blockColor['map'] = new Color(200, 20, 50);
@@ -340,13 +340,11 @@ SpriteMorph.prototype.initBlocks();
 
 // blockTemplates proxy
 
-SpriteMorph.prototype.originalBlockTemplates = SpriteMorph.prototype.blockTemplates;
-SpriteMorph.prototype.blockTemplates = function(category) {
-	var myself = this;
-
-	var blocks = myself.originalBlockTemplates(category); 
+var blockTemplates = function(category) {
+	var blocks = this.originalBlockTemplates(category); 
 
 	function blockBySelector(selector) {
+		// Can't call myself, as these blocks belong only to SpriteMorph and I may be a StageMorph as well
 		var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
 		newBlock.isTemplate = true;
 		return newBlock;
@@ -364,14 +362,12 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 	}
 
 	if (category === 'api') {
-		// JSON and Associations
 		blocks.push(blockBySelector('jsonObject'));
 		blocks.push(blockBySelector('objectToJsonString'));
 		blocks.push('-');
 		blocks.push(blockBySelector('newAssociation'));
 		blocks.push(blockBySelector('valueAt'));
 		blocks.push('-');
-		// API Access
 		blocks.push(blockBySelector('apiCall'));
 		blocks.push(blockBySelector('proxiedApiCall'));
 	};
@@ -395,6 +391,12 @@ SpriteMorph.prototype.blockTemplates = function(category) {
 	}
 	return blocks;
 }
+
+SpriteMorph.prototype.originalBlockTemplates = SpriteMorph.prototype.blockTemplates;
+SpriteMorph.prototype.blockTemplates = blockTemplates;
+
+StageMorph.prototype.originalBlockTemplates = StageMorph.prototype.blockTemplates;
+StageMorph.prototype.blockTemplates = blockTemplates;
 
 // OpenLayers Stage
 
