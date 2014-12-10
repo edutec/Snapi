@@ -334,6 +334,12 @@ SpriteMorph.prototype.initBlocks = function() {
 		category: 'map',
 		spec: 'remove all markers'
 	};
+	this.blocks.showBubbles =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'show bubbles'
+	};
 }
 
 SpriteMorph.prototype.initBlocks();
@@ -388,6 +394,8 @@ var blockTemplates = function(category) {
 		blocks.push(blockBySelector('showMarkers'));
 		blocks.push(blockBySelector('hideMarkers'));
 		blocks.push(blockBySelector('clearMarkers'));
+//		blocks.push('-');
+//		blocks.push(blockBySelector('showBubbles'));
 	}
 	return blocks;
 }
@@ -452,12 +460,14 @@ StageMorph.prototype.init = function (globals) {
 	this.map.currentLayer = this.map.layers.road;
 	this.map.currentLayer.setVisible(true);
 	this.map.markers = markersSource;
+	this.map.showingBubbles = false;
 	this.map.canvas = this.map.getTarget().children[0].children[0];
 	this.map.visible = false;
 }
 
 StageMorph.prototype.originalDrawOn = StageMorph.prototype.drawOn;
 StageMorph.prototype.drawOn = function (aCanvas, aRect) {
+	var myself = this;
 	this.originalDrawOn(aCanvas, aRect);
     var rectangle, area, delta, src, context, w, h, sl, st, ws, hs;
     if (!this.isVisible) {
@@ -498,6 +508,18 @@ StageMorph.prototype.drawOn = function (aCanvas, aRect) {
                 ws,
                 hs
             );
+			if (this.map.showingBubbles) {
+				this.map.markers.getFeatures().forEach(function(feature) {
+					var value = feature.get('value');
+					if (value) {
+						var bubble = new SpeechBubbleMorph(value),
+							coord = feature.getGeometry().getCoordinates(),
+							pos = myself.map.getPixelFromCoordinate(coord),
+							point = new Point(pos[0] + myself.left(), pos[1] + myself.top());
+						bubble.showUp(myself.world(), point);
+					}
+				})
+			}
 			context.restore();
 		}
     }
@@ -532,7 +554,6 @@ StageMorph.prototype.mouseDownLeft = function(pos) {
 			var bubble = new SpeechBubbleMorph(value);
 			bubble.popUp(this.world(), pos, true);
 		}
-
     }
 };
 

@@ -61,7 +61,7 @@ tempDict = {
 	'%s → %s':
 		'%s → %s',
 	'value at %s of object %s':
-		'valor a %s d\'objecte %s',
+		'valor %s d\'objecte %s',
 	'%method at %protocol %s with parameters %mult%s':
 		'%method a %protocol %s amb paràmetres %mult%s',
 	'proxied %method at %protocol %s with parameters %mult%s':

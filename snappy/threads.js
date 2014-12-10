@@ -228,6 +228,11 @@ Process.prototype.simpleAddMarker = function(color, loc, value) {
 		this.addMarker(color, finalLoc[0], finalLoc[1], value);
 }
 
+Process.prototype.showBubbles = function() {
+		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
+		stage.map.showingBubbles = true;
+}
+
 // Colors
 
 Process.prototype.colorFromRGB = function(r,g,b) {
