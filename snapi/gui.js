@@ -242,7 +242,7 @@ IDE_Morph.prototype.createLogo = function () {
 		}
 
 		this.logo = new Morph();
-		this.logo.texture = 'snappy/logo.png'; // Overriden
+		this.logo.texture = 'snapi/logo.png'; // Overriden
 		this.logo.drawNew = function () {
 				this.image = newCanvas(this.extent());
 				var context = this.image.getContext('2d'),
@@ -299,8 +299,8 @@ IDE_Morph.prototype.setLanguage = function(lang, callback) {
 	var myself = this;
 
 	myself.originalSetLanguage(lang, function() {
-		var translation = document.getElementById('snappy-language'),
-		src = 'snappy/lang-' + lang + '.js',
+		var translation = document.getElementById('snapi-language'),
+		src = 'snapi/lang-' + lang + '.js',
 		myInnerSelf = this;
 		if (translation) {
 			document.head.removeChild(translation);
@@ -309,7 +309,7 @@ IDE_Morph.prototype.setLanguage = function(lang, callback) {
 			return this.reflectLanguage('en', callback);
 		}
 		translation = document.createElement('script');
-		translation.id = 'snappy-language';
+		translation.id = 'snapi-language';
 		translation.onload = function () {
 			myInnerSelf.reflectLanguage(lang, callback);
 		};
