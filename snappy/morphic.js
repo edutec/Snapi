@@ -1,12 +1,23 @@
-SpeechBubbleMorph.prototype.showUp = function (world, pos) {
-    this.drawNew();
-    this.setPosition(pos.subtract(new Point(0, this.height())));
-    this.addShadow(new Point(2, 2), 80);
-    this.keepWithin(world);
-	if(world.children.indexOf(this) == -1) { world.add(this) };
-    this.fullChanged();
-	this.mouseDownLeft = function () {
-		this.destroy();
-	};
-};
+SpeechBubbleMorph.prototype.adjustPosition = function(pos) {
+	var oldPos = this.position(),
+		newPos = pos.subtract(new Point(0, this.height()));
+	if (oldPos != newPos) {
+		this.drawNew();
+		this.setPosition(newPos);
+		this.fullChanged();
+	}
+}
+
+SpeechBubbleMorph.prototype.showUp = function (stage, pos) {
+	var myself = this;
+	if (! this.hasBeenAddedToStage) {
+		stage.add(this);
+		this.hasBeenAddedToStage = true;
+		this.mouseDownLeft = function () {
+			myself.destroy();
+			myself.hasBeenAddedToStage = false;
+		};
+ 	}
+	this.adjustPosition(pos);
+}
 

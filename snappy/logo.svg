@@ -9,7 +9,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="63.672432"
+   width="50.957634"
    height="24"
    id="svg3796"
    version="1.1"
@@ -26,7 +26,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="5.6"
      inkscape:cx="53.097482"
-     inkscape:cy="9.7059013"
+     inkscape:cy="9.7058982"
      inkscape:document-units="px"
      inkscape:current-layer="g3880"
      showgrid="false"
@@ -47,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -86,7 +86,7 @@
            y="342.97015"
            x="395.5213"
            id="tspan5090"
-           sodipodi:role="line">Snappy<tspan
+           sodipodi:role="line">Snapi<tspan
    style="font-style:oblique;-inkscape-font-specification:DejaVu Sans Oblique"
    id="tspan3885">!</tspan></tspan></text>
     </g>
