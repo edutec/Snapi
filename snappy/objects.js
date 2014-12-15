@@ -291,6 +291,18 @@ SpriteMorph.prototype.initBlocks = function() {
 		category: 'map',
 		spec: 'current latitude',
 	};
+	this.blocks.xFromLongitude =
+	{
+		type: 'reporter',
+		category: 'map',
+		spec: 'x from longitude %n',
+	};
+	this.blocks.yFromLatitude =
+	{
+		type: 'reporter',
+		category: 'map',
+		spec: 'y from latitude %n',
+	};
 	this.blocks.setMapZoom =
 	{
 		type: 'command',
@@ -307,14 +319,14 @@ SpriteMorph.prototype.initBlocks = function() {
 	{
 		type: 'command',
 		category: 'map',
-		spec: '%clr marker at long %n lat %n value %s',
+		spec: 'add %clr marker at long %n lat %n value %s',
 		defaults: [null, 2.061749, 41.359827, 'Citilab']
 	};
 	this.blocks.simpleAddMarker =
 	{
 		type: 'command',
 		category: 'map',
-		spec: '%clr marker at %l value %s'
+		spec: 'add %clr marker at %l value %s'
 	};
 	this.blocks.showMarkers =
 	{
@@ -339,6 +351,12 @@ SpriteMorph.prototype.initBlocks = function() {
 		type: 'command',
 		category: 'map',
 		spec: 'show bubbles'
+	};
+	this.blocks.hideBubbles =
+	{
+		type: 'command',
+		category: 'map',
+		spec: 'hide bubbles'
 	};
 }
 
@@ -386,6 +404,8 @@ var blockTemplates = function(category) {
 		blocks.push(blockBySelector('setMapCenter'));
 		blocks.push(blockBySelector('getCurrentLongitude'));
 		blocks.push(blockBySelector('getCurrentLatitude'));
+		blocks.push(blockBySelector('xFromLongitude'));
+		blocks.push(blockBySelector('yFromLatitude'));
 		blocks.push(blockBySelector('setMapZoom'));
 		blocks.push(blockBySelector('getMapZoom'));
 		blocks.push('-');
@@ -394,8 +414,9 @@ var blockTemplates = function(category) {
 		blocks.push(blockBySelector('showMarkers'));
 		blocks.push(blockBySelector('hideMarkers'));
 		blocks.push(blockBySelector('clearMarkers'));
-//		blocks.push('-');
-//		blocks.push(blockBySelector('showBubbles'));
+		blocks.push('-');
+		blocks.push(blockBySelector('showBubbles'));
+		blocks.push(blockBySelector('hideBubbles'));
 	}
 	return blocks;
 }
@@ -465,11 +486,10 @@ StageMorph.prototype.init = function (globals) {
 	this.map.visible = false;
 }
 
-StageMorph.prototype.originalDrawOn = StageMorph.prototype.drawOn;
+// Overriden
 StageMorph.prototype.drawOn = function (aCanvas, aRect) {
-	var myself = this;
-	this.originalDrawOn(aCanvas, aRect);
-    var rectangle, area, delta, src, context, w, h, sl, st, ws, hs;
+    // make sure to draw the pen trails canvas as well
+    var rectangle, area, delta, src, context, w, h, sl, st, ws, hs, myself = this;
     if (!this.isVisible) {
         return null;
     }
@@ -486,10 +506,22 @@ StageMorph.prototype.drawOn = function (aCanvas, aRect) {
         w = Math.min(src.width(), this.image.width - sl);
         h = Math.min(src.height(), this.image.height - st);
 
-        if (w < 1 || h < 1) { return null };
+        if (w < 1 || h < 1) {
+            return null;
+        }
+        context.drawImage(
+            this.image,
+            src.left(),
+            src.top(),
+            w,
+            h,
+            area.left(),
+            area.top(),
+            w,
+            h
+        );
 
 		// map canvas
-	
 		if (this.map.visible) {
 			ws = w / this.scale;
 			hs = h / this.scale;
@@ -508,22 +540,55 @@ StageMorph.prototype.drawOn = function (aCanvas, aRect) {
                 ws,
                 hs
             );
-			if (this.map.showingBubbles) {
-				this.map.markers.getFeatures().forEach(function(feature) {
-					var value = feature.get('value');
-					if (value) {
-						var bubble = new SpeechBubbleMorph(value),
-							coord = feature.getGeometry().getCoordinates(),
-							pos = myself.map.getPixelFromCoordinate(coord),
-							point = new Point(pos[0] + myself.left(), pos[1] + myself.top());
-						bubble.showUp(myself.world(), point);
-					}
-				})
-			}
+			myself.map.markers.forEachFeature(function(feature) {
+				var coord = feature.getGeometry().getCoordinates(),
+					pos = myself.map.getPixelFromCoordinate(coord),
+					point = new Point(pos[0] * myself.scale + myself.left(), pos[1] * myself.scale + myself.top());
+				if (myself.map.showingBubbles) {
+    				feature.get('bubble').showUp(myself, point);
+				} else {
+					feature.get('bubble').adjustPosition(point);
+				}
+				
+			}) 
 			context.restore();
 		}
+
+        // pen trails
+        ws = w / this.scale;
+        hs = h / this.scale;
+        context.save();
+        context.scale(this.scale, this.scale);
+        try {
+            context.drawImage(
+                this.penTrails(),
+                src.left() / this.scale,
+                src.top() / this.scale,
+                ws,
+                hs,
+                area.left() / this.scale,
+                area.top() / this.scale,
+                ws,
+                hs
+            );
+        } catch (err) { // sometimes triggered only by Firefox
+            // console.log(err);
+            context.restore();
+            context.drawImage(
+                this.penTrails(),
+                0,
+                0,
+                this.dimensions.x,
+                this.dimensions.y,
+                this.left(),
+                this.top(),
+                this.dimensions.x * this.scale,
+                this.dimensions.y * this.scale
+            );
+        }
+        context.restore();
     }
-};
+ };
 
 StageMorph.prototype.featureAtPosition = function(pos) {
 	return this.map.forEachFeatureAtPixel(
@@ -551,8 +616,7 @@ StageMorph.prototype.mouseDownLeft = function(pos) {
 	if (feature) {
     	var value = feature.get('value');
 		if (value) {
-			var bubble = new SpeechBubbleMorph(value);
-			bubble.popUp(this.world(), pos, true);
+			feature.get('bubble').showUp(this.world(), pos);
 		}
     }
 };
@@ -562,7 +626,7 @@ StageMorph.prototype.mouseDownRight = function(pos) {
 };
 
 StageMorph.prototype.mouseMove = function(pos, button) {
-  		if (this.map.visible) {
+  	if (this.map.visible) {
 	    deltaX = this.referencePos.x - pos.x;
 	    deltaY = pos.y - this.referencePos.y;
 		this.referencePos = pos;
@@ -572,7 +636,7 @@ StageMorph.prototype.mouseMove = function(pos, button) {
 		view.setCenter(
 			[view.getCenter()[0] + deltaX / this.dimensions.x / xFactor * 10000000,
 			 view.getCenter()[1] + deltaY / this.dimensions.y / yFactor * 10000000]
-		)
+		);
 		this.delayedRefresh();
 	}
 };

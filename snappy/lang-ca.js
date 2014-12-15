@@ -39,6 +39,12 @@ tempDict = {
 
         without breaking its functionality.
     */
+	// Control:
+	
+	'for %upvar in %l %cs':
+		'per %upvar de %l %cs',
+	'each item':
+		'cada element',
 	// Color:
 	'color %clr':
 		'color %clr',
@@ -104,20 +110,28 @@ tempDict = {
 		'longitud actual',
 	'current latitude':
 		'latitud actual',
+	'x from longitude %n':
+		'x de longitud %n',
+	'y from latitude %n':
+		'y de latitud %n',
 	'set zoom level to %zoomLevel':
 		'fixa zoom a %zoomLevel',
 	'zoom level':
 		'zoom',
-	'%clr marker at long %n lat %n value %s':
-		'marcador %clr a long %n lat %n valor %s',
-	'%clr marker at %l value %s':
-		'marcador %clr a %l valor %s',
+	'add %clr marker at long %n lat %n value %s':
+		'afegeix marcador %clr a long %n lat %n valor %s',
+	'add %clr marker at %l value %s':
+		'afegeix marcador %clr a %l valor %s',
 	'show markers':
 		'mostra marcadors',
 	'hide markers':
 		'amaga marcadors',
 	'remove all markers':
 		'elimina marcadors',
+	'show bubbles':
+		'mostra bafarades',
+	'hide bubbles':
+		'amaga bafarades',
 	'remove': 
 		'elimina',
 	'show in OpenStreetMap':

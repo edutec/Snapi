@@ -145,6 +145,16 @@ Process.prototype.getCurrentLatitude = function() {
 		return ol.proj.transform(stage.map.getView().getCenter(), 'EPSG:3857', 'EPSG:4326')[1];
 }
 
+Process.prototype.xFromLongitude = function(longitude) {
+		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
+		return stage.map.getPixelFromCoordinate(ol.proj.transform([longitude, 0], 'EPSG:4326', 'EPSG:3857'))[0] - (stage.width() / 2);
+}
+
+Process.prototype.yFromLatitude = function(latitude) {
+		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
+		return (stage.height() / 2) - stage.map.getPixelFromCoordinate(ol.proj.transform([0, latitude], 'EPSG:4326', 'EPSG:3857'))[1];
+}
+
 Process.prototype.setMapZoom = function(level) {
 		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
 		stage.map.getView().setZoom(Math.max(Math.min(level, 20),1));
@@ -175,13 +185,15 @@ Process.prototype.clearMarkers = function() {
 }
 
 Process.prototype.addMarker = function(color, lng, lat, value) {
-		var stage = this.homeContext.receiver.parentThatIsA(StageMorph), 
+		var stage = this.homeContext.receiver.parentThatIsA(StageMorph),
 			longitude = Number.parseFloat(lng),
-			latitude = Number.parseFloat(lat);
+			latitude = Number.parseFloat(lat),
+			pos;
 
 		var iconFeature = new ol.Feature({
 				geometry: new ol.geom.Point(ol.proj.transform([isNaN(longitude)?0:longitude, isNaN(latitude)?0:latitude], 'EPSG:4326', 'EPSG:3857')),
-				value: value
+				value: value,
+				bubble: new SpeechBubbleMorph(value)
 		});
 
 		var iconStyle = new ol.style.Style({
@@ -194,7 +206,7 @@ Process.prototype.addMarker = function(color, lng, lat, value) {
 
 		iconFeature.setStyle(iconStyle);
 		stage.map.markers.addFeature(iconFeature);
-
+		pos = stage.map.getPixelFromCoordinate(iconFeature.getGeometry().getCoordinates());
 		stage.delayedRefresh();
 }
 
@@ -231,6 +243,19 @@ Process.prototype.simpleAddMarker = function(color, loc, value) {
 Process.prototype.showBubbles = function() {
 		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
 		stage.map.showingBubbles = true;
+		stage.changed();
+}
+
+Process.prototype.hideBubbles = function() {
+		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
+		stage.map.showingBubbles = false;
+		stage.map.markers.forEachFeature(function(feature) {
+			// Bonus feature! When on "show bubbles" mode, this code allows you to 
+			// place the clicked bubble on top of all others!
+			var bubble = feature.get('bubble')
+			bubble.hasBeenAddedToStage = false;
+			bubble.destroy();
+		});
 }
 
 // Colors
@@ -250,7 +275,28 @@ Process.prototype.colorFromPicker = function(color) {
 }
 
 Process.prototype.colorFromString = function(string) {
-		return this.colorFromHSV(((Math.abs(string.toString().split('').reduce(function(a,b){ a = ((a<<5) - a) + b.charCodeAt(0); return a & a }, 0)) % 255)/255),1,1)
+		var color,
+			components,
+			element = document.createElement('div');
+
+		// We first attempt to read a color by (ab)using HTML color names
+	    element.style.color = string.split(' ').join('');
+    	components = window.getComputedStyle(document.body.appendChild(element)).color.match(/\d+/g).map(function(a){ return parseInt(a,10) });
+		document.body.removeChild(element);
+
+		// If there is no color named after that string, we use magic. There are only 255 magic colors, deal with it!
+		if (string.toLowerCase() != 'black' && components[0] == 0 && components[1] == 0 && components[2] == 0) {
+			return this.colorFromHSV(
+				((Math.abs(
+					string.toString().split('').reduce(function(a,b){
+						a = ((a<<5) - a) + b.charCodeAt(0); return a & a
+					}, 
+					0)) % 255) / 255)
+				,1
+				,1)
+		} else {
+			return new Color(components[0], components[1], components[2])
+		}
 }
 
 // List modifications to accept JSON arrays
