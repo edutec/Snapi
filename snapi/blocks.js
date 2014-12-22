@@ -119,7 +119,7 @@ SyntaxElementMorph.prototype.labelPart = function(spec) {
             part = new ColorSlotMorph();
 			break;
 		default:
-			part = SyntaxElementMorph.prototype.originalLabelPart(spec);
+			part = this.originalLabelPart(spec);
 	}
 	return part;
 }
