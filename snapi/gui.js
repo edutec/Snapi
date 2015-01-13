@@ -1,3 +1,107 @@
+IDE_Morph.prototype.originalOpenIn = IDE_Morph.prototype.openIn;
+IDE_Morph.prototype.openIn = function(world) {
+	this.originalOpenIn(world);
+	if (location.hash.substr(0, 9) === '#tutorial') {
+		this.startTutorial(world);
+	}
+}
+
+IDE_Morph.prototype.startTutorial = function(world) {
+	var tutorial = [],
+		currentSlide = 0;
+		myself = this;
+
+	tutorial.push((new DialogBoxMorph).tutorialWindow(
+			'Benvinguts a Snapi!', //title
+			null, // pic
+			  'Aquest tutorial us ensenyarà els conceptes bàsics\n' //msg
+			+ 'per construïr les vostres pròpies aplicacions en\n'
+			+ 'Snapi!.\n\n'
+			+ 'Si voleu visitar-lo en un futur, podeu fer-ho\n'
+			+ 'escollint "Tutorial" dins el menú d\'arxiu.',
+			null, // popUpPosition
+			null, // arrowOrientation ('left' / 'right')
+			null, // previousWindow function
+			function() { myself.next() } // nextWindow function
+	));
+
+	tutorial.push((new DialogBoxMorph).tutorialWindow(
+			'Què és Snapi?', 
+			null, 
+			  'Snapi és una extensió del llenguatge i entorn de\n'
+			+ 'programació Snap!, desenvolupat per la Universitat\n'
+			+ 'de Berkeley, California.\n\n'
+			+ 'Aquesta extensió està concebuda perquè tothom pugui\n'
+			+ 'treballar amb dades obertes provinents de serveis\n'
+			+ 'públics d\'Internet.\n\n'
+			+ 'En aquest cas, treballarem amb les dades obertes que\n'
+			+ 'l\'Àrea Metropolitana de Barcelona (AMB) proporciona\n'
+			+ 'de forma gratuïta i lliure per a l\'ús de la ciutadania.',
+			null,
+			null,
+			function() { myself.previous() },
+			function() { myself.next() }
+	));
+
+	tutorial.push((new DialogBoxMorph).tutorialWindow(
+			'Importem la llibreria d\'AMB', 
+			null, 
+			  'Cliqueu en aquest menú (Arxiu) i seleccioneu l\'opció\n'
+			+ '"APIs...", al final de tot.\n\n'
+			+ 'Seguidament, seleccioneu la llibreria "AMB Barcelona OpenData".',
+			new Point(150, 18),
+			'left',
+			function() { myself.previous() },
+			function() { myself.next() }
+	));
+
+	tutorial.push((new DialogBoxMorph).tutorialWindow(
+			'Categories de blocs', 
+			null, 
+			  'En Snap! (i, per tant, en Snapi!), programem encaixant\n'
+			+ 'blocs que realitzen accions.\n\n'
+			+ 'Aquesta caixa mostra les diferents categories de blocs\n'
+			+ 'de què disposem.\n\n'
+			+ 'Seleccioneu la categoria "Api".',
+			new Point(100, 114),
+			'left',
+			function() { myself.previous() },
+			function() { myself.next() }
+	));
+
+	tutorial.push((new DialogBoxMorph).tutorialWindow(
+			'L\'API d\'OpenData de l\'AMB', 
+			null, 
+			  'Fixeu-vos que, important la llibreria d\'AMB, hem\n'
+			+ 'obtingut uns quants blocs per interactuar-hi.\n\n'
+			+ '',
+			new Point(195, 345),
+			'left',
+			function() { myself.previous() },
+			function() { myself.next() }
+	));
+
+	this.previous = function() {
+		tutorial[currentSlide].hide();
+		currentSlide--;
+		tutorial[currentSlide].popUp(world)
+	}
+
+	this.next = function() {
+		tutorial[currentSlide].hide();
+		currentSlide++;
+		tutorial[currentSlide].popUp(world)
+	}
+
+	// seems convoluted, but we want to close all dialogs, not just the current one
+	this.cancelTutorial = function() {
+		tutorial.forEach(function(each){ each.cancel() });
+	}
+	tutorial.forEach(function(each){ each.cancelAction = myself.cancelTutorial });
+
+	tutorial[currentSlide].popUp(world);
+}
+
 IDE_Morph.prototype.projectMenu = function () {
 		var menu,
 			myself = this,
@@ -281,11 +385,17 @@ IDE_Morph.prototype.createLogo = function () {
 		this.add(this.logo);
 };
 
-// Allow dropping of InspectorMorphs
 IDE_Morph.prototype.originalInit = IDE_Morph.prototype.init; 
 IDE_Morph.prototype.init = function () {
+	// Default design upon loading is Flat
+	this.saveSetting('design', 'flat');
+
 	this.originalInit();
 
+	// Default language upon loading is Catalan
+	this.setLanguage('ca');
+
+	// Allow dropping of InspectorMorphs
 	originalWantsDropOf = this.wantsDropOf;
 	this.wantsDropOf = function (morph) {
 		return (originalWantsDropOf() || morph instanceof InspectorMorph);
