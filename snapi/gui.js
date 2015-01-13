@@ -281,11 +281,17 @@ IDE_Morph.prototype.createLogo = function () {
 		this.add(this.logo);
 };
 
-// Allow dropping of InspectorMorphs
 IDE_Morph.prototype.originalInit = IDE_Morph.prototype.init; 
 IDE_Morph.prototype.init = function () {
+	// Default design upon loading is Flat
+	this.saveSetting('design', 'flat');
+
 	this.originalInit();
 
+	// Default language upon loading is Catalan
+	this.setLanguage('ca');
+
+	// Allow dropping of InspectorMorphs
 	originalWantsDropOf = this.wantsDropOf;
 	this.wantsDropOf = function (morph) {
 		return (originalWantsDropOf() || morph instanceof InspectorMorph);
