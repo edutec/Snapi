@@ -1,17 +1,55 @@
 IDE_Morph.prototype.originalOpenIn = IDE_Morph.prototype.openIn;
 IDE_Morph.prototype.openIn = function(world) {
 	this.originalOpenIn(world);
-	if (location.hash.substr(0, 9) === '#tutorial') {
+	if (location.hash.substr(0, 9) === '#tutorial' && ! world.tutorialWasShown) {
+		world.tutorialWasShown = true;
 		this.startTutorial(world);
 	}
 }
 
 IDE_Morph.prototype.startTutorial = function(world) {
-	var tutorial = [],
-		currentSlide = 0;
+	var morph,
+		image,
 		myself = this;
 
-	tutorial.push((new DialogBoxMorph).tutorialWindow(
+	if (!this.tutorial) { 
+		this.tutorial = {};
+		this.tutorial.slides = [];
+		this.tutorial.currentIndex = 0;
+
+		this.tutorial.addSlide = function(slide) {
+			this.slides.push(slide);
+		};
+
+		this.tutorial.previous = function() {
+			this.currentSlide.cancel();
+			this.currentIndex--;
+			this.currentSlide = this.slides[this.currentIndex];
+			if (this.currentIndex == 0) {
+				this.currentSlide.previousButton.disable();
+			}
+			this.currentSlide.popUp(world);
+		};
+		this.tutorial.next = function() {
+			this.currentSlide.cancel();
+			this.currentIndex++;
+			this.currentSlide = this.slides[this.currentIndex];
+			if (this.currentIndex == this.slides.length - 1) {
+				this.currentSlide.nextButton.disable();
+			}
+			this.currentSlide.popUp(world);
+		};
+		
+		this.tutorial.startIn = function(world) {
+			this.currentSlide = this.slides[this.currentIndex]
+			this.currentSlide.popUp(world);
+		};
+	} else {
+		this.tutorial.quit();
+		return;
+	}
+
+	this.tutorial.addSlide((new DialogBoxMorph).tutorialWindow(
 			'Benvinguts a Snapi!', //title
 			null, // pic
 			  'Aquest tutorial us ensenyarà els conceptes bàsics\n' //msg
@@ -22,10 +60,10 @@ IDE_Morph.prototype.startTutorial = function(world) {
 			null, // popUpPosition
 			null, // arrowOrientation ('left' / 'right')
 			null, // previousWindow function
-			function() { myself.next() } // nextWindow function
+			function() { myself.tutorial.next() } // nextWindow function
 	));
 
-	tutorial.push((new DialogBoxMorph).tutorialWindow(
+	this.tutorial.addSlide((new DialogBoxMorph).tutorialWindow(
 			'Què és Snapi?', 
 			null, 
 			  'Snapi és una extensió del llenguatge i entorn de\n'
@@ -39,11 +77,11 @@ IDE_Morph.prototype.startTutorial = function(world) {
 			+ 'de forma gratuïta i lliure per a l\'ús de la ciutadania.',
 			null,
 			null,
-			function() { myself.previous() },
-			function() { myself.next() }
+			function() { myself.tutorial.previous() },
+			function() { myself.tutorial.next() }
 	));
 
-	tutorial.push((new DialogBoxMorph).tutorialWindow(
+	this.tutorial.addSlide((new DialogBoxMorph).tutorialWindow(
 			'Importem la llibreria d\'AMB', 
 			null, 
 			  'Cliqueu en aquest menú (Arxiu) i seleccioneu l\'opció\n'
@@ -51,11 +89,11 @@ IDE_Morph.prototype.startTutorial = function(world) {
 			+ 'Seguidament, seleccioneu la llibreria "AMB Barcelona OpenData".',
 			new Point(150, 18),
 			'left',
-			function() { myself.previous() },
-			function() { myself.next() }
+			function() { myself.tutorial.previous() },
+			function() { myself.tutorial.next() }
 	));
 
-	tutorial.push((new DialogBoxMorph).tutorialWindow(
+	this.tutorial.addSlide((new DialogBoxMorph).tutorialWindow(
 			'Categories de blocs', 
 			null, 
 			  'En Snap! (i, per tant, en Snapi!), programem encaixant\n'
@@ -65,41 +103,42 @@ IDE_Morph.prototype.startTutorial = function(world) {
 			+ 'Seleccioneu la categoria "Api".',
 			new Point(100, 114),
 			'left',
-			function() { myself.previous() },
-			function() { myself.next() }
+			function() { myself.tutorial.previous() },
+			function() { myself.tutorial.next() }
 	));
 
-	tutorial.push((new DialogBoxMorph).tutorialWindow(
+	this.tutorial.addSlide((new DialogBoxMorph).tutorialWindow(
 			'L\'API d\'OpenData de l\'AMB', 
 			null, 
 			  'Fixeu-vos que, important la llibreria d\'AMB, hem\n'
-			+ 'obtingut uns quants blocs per interactuar-hi.\n\n'
-			+ '',
-			new Point(195, 345),
+			+ 'obtingut uns quants blocs per interactuar amb\n'
+			+ 'aquesta API.\n\n'
+			+ 'Mitjançant aquests blocs, podem accedir a totes les\n'
+			+ 'dades que aquest servei de l\'AMB proporciona.',
+			new Point(195, 280),
 			'left',
-			function() { myself.previous() },
-			function() { myself.next() }
+			function() { myself.tutorial.previous() },
+			function() { myself.tutorial.next() }
 	));
 
-	this.previous = function() {
-		tutorial[currentSlide].hide();
-		currentSlide--;
-		tutorial[currentSlide].popUp(world)
-	}
+	morph = new FrameMorph();
+	image = new Image();
+	image.src = 'data:image/png;base64,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';
+	morph.setExtent(new Point(image.width, image.height));
+	morph.image = image;
 
-	this.next = function() {
-		tutorial[currentSlide].hide();
-		currentSlide++;
-		tutorial[currentSlide].popUp(world)
-	}
+	this.tutorial.addSlide((new DialogBoxMorph).tutorialWindow(
+			'Comencem a programar', 
+			morph,
+			  'Arrossegueu aquest bloc cap a l\'àrea gris buida del\n'
+			+ 'centre de la pantalla, etiquetada com a "Programes".',
+			new Point(195, 345),
+			'left',
+			function() { myself.tutorial.previous() },
+			function() { myself.tutorial.next() }
+	));
 
-	// seems convoluted, but we want to close all dialogs, not just the current one
-	this.cancelTutorial = function() {
-		tutorial.forEach(function(each){ each.cancel() });
-	}
-	tutorial.forEach(function(each){ each.cancelAction = myself.cancelTutorial });
-
-	tutorial[currentSlide].popUp(world);
+	this.tutorial.startIn(world);
 }
 
 IDE_Morph.prototype.projectMenu = function () {

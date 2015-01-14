@@ -44,6 +44,7 @@ DialogBoxMorph.prototype.tutorialWindow = function (
 
 	this.popUpPosition = popUpPosition;
 	this.cancelAction = cancelAction;
+	this.isDraggable = false;
 
     bdy.setColor(this.color);
 
