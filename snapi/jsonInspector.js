@@ -53,6 +53,7 @@ JsonInspectorMorph.prototype.init = function(target) {
 	this.detail.setLeft(this.list.width() + 4);
 	this.detail.setTop(0);
 	this.detail.setHeight(this.list.height());
+
 	bdy.drawNew();
 	bdy.fixLayout();
 
@@ -135,6 +136,9 @@ JsonInspectorMorph.prototype.updateCurrentSelection = function(inspector) {
 	
 JsonInspectorMorph.prototype.popUp = function (target) {
 	JsonInspectorMorph.uber.popUp.call(this, target.world());
+
+	// Until resizing is working, we're better off without this icon
+	/*
 	this.handle = new HandleMorph(
 		this,
 		280,
@@ -143,6 +147,10 @@ JsonInspectorMorph.prototype.popUp = function (target) {
 		this.corner,
 		'resize'
 	);
+	*/
+
+	this.list.adjustScrollBars();
+	this.detail.adjustScrollBars();
 };
 
 Morph.prototype.jsonInspect = function(inspectee) {
