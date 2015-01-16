@@ -40,11 +40,12 @@ tempDict = {
         without breaking its functionality.
     */
 	// Control:
-	
 	'for %upvar in %l %cs':
 		'per %upvar de %l %cs',
 	'each item':
 		'cada element',
+
+
 	// Color:
 	'color %clr':
 		'color %clr',
@@ -76,12 +77,20 @@ tempDict = {
 		'Importar blocs d\'API',
 	'Choose among different API blocks to add to this project.':
 		'Escull entre blocs de diferents APIs per afegir al projecte.',
+
+	// New widgets
 	'inspect JSON':
 		'inspecciona JSON',
 	'Inspect':
 		'Inspecciona',
 	'Close':
 		'Tanca',
+	'Quit':
+		'Sortir',
+	'« Previous':
+		'« Anterior',
+	'Next »':
+		'Següent »',
 	
     // Maps:
 	'Map':
@@ -165,7 +174,28 @@ tempDict = {
 	'%txt is %txt in country with code %txt':
 		'%txt és %txt al país amb codi %txt',
 	'%txt is %txt in language with code %txt':
-		'%txt és %txt en l\'idioma amb codi %txt'
+		'%txt és %txt en l\'idioma amb codi %txt',
+
+	// Missing strings
+	'JavaScript function ( %mult%s ) { %code }':
+		'funció JavaScript ( %mult%s ) { %code }',
+	'Reset Password...':
+		'Restablir contrasenya...',
+	'Reset password':
+		'Restablir contrasenya',
+	'User name:':
+		'Nom d\'usuari:',
+	'User name:':
+		'Nom d\'usuari:',
+	'Codification support':
+		'Suport per a codificació',
+	'check for block\nto text mapping features':
+		'marca\'m per activar les\nfuncionalitats de conversió\nde blocs a codi',
+	'add a new Turtle sprite':
+		'afegeix un nou objecte Tortuga',
+	'paint a new sprite':
+		'dibuixa un nou objecte',
+
 };
 
 // Add attributes to original SnapTranslator.dict.ca
