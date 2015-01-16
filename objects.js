@@ -9,7 +9,7 @@
     written by Jens Mönig
     jens@moenig.org
 
-    Copyright (C) 2014 by Jens Mönig
+    Copyright (C) 2015 by Jens Mönig
 
     This file is part of Snap!.
 
@@ -125,7 +125,7 @@ PrototypeHatBlockMorph*/
 
 // Global stuff ////////////////////////////////////////////////////////
 
-modules.objects = '2014-December-04';
+modules.objects = '2015-January-12';
 
 var SpriteMorph;
 var StageMorph;
@@ -792,6 +792,12 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'reporter',
             category: 'sensing',
             spec: 'frames'
+        },
+        reportThreadCount: {
+            dev: true,
+            type: 'reporter',
+            category: 'sensing',
+            spec: 'processes'
         },
         doAsk: {
             type: 'command',
@@ -1918,6 +1924,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             txt.setColor(this.paletteTextColor);
             blocks.push(txt);
             blocks.push('-');
+            blocks.push(watcherToggle('reportThreadCount'));
+            blocks.push(block('reportThreadCount'));
             blocks.push(block('colorFiltered'));
             blocks.push(block('reportStackSize'));
             blocks.push(block('reportFrameCount'));
@@ -2634,7 +2642,9 @@ SpriteMorph.prototype.userMenu = function () {
     menu.addItem("duplicate", 'duplicate');
     menu.addItem("delete", 'remove');
     menu.addItem("move", 'move');
-    menu.addItem("edit", 'edit');
+    if (!this.isClone) {
+        menu.addItem("edit", 'edit');
+    }
     menu.addLine();
     if (this.anchor) {
         menu.addItem(
@@ -2650,6 +2660,7 @@ SpriteMorph.prototype.userMenu = function () {
 };
 
 SpriteMorph.prototype.exportSprite = function () {
+    if (this.isCoone) {return; }
     var ide = this.parentThatIsA(IDE_Morph);
     if (ide) {
         ide.exportSprite(this);
@@ -3522,6 +3533,7 @@ SpriteMorph.prototype.mouseClickLeft = function () {
 };
 
 SpriteMorph.prototype.mouseDoubleClick = function () {
+    if (this.isClone) {return; }
     this.edit();
 };
 
@@ -3575,6 +3587,16 @@ SpriteMorph.prototype.reportMouseY = function () {
     var stage = this.parentThatIsA(StageMorph);
     if (stage) {
         return stage.reportMouseY();
+    }
+    return 0;
+};
+
+// SpriteMorph thread count (for debugging)
+
+SpriteMorph.prototype.reportThreadCount = function () {
+    var stage = this.parentThatIsA(StageMorph);
+    if (stage) {
+        return stage.threads.processes.length;
     }
     return 0;
 };
@@ -5059,6 +5081,8 @@ StageMorph.prototype.blockTemplates = function (category) {
             txt.setColor(this.paletteTextColor);
             blocks.push(txt);
             blocks.push('-');
+            blocks.push(watcherToggle('reportThreadCount'));
+            blocks.push(block('reportThreadCount'));
             blocks.push(block('colorFiltered'));
             blocks.push(block('reportStackSize'));
             blocks.push(block('reportFrameCount'));
@@ -5508,6 +5532,9 @@ StageMorph.prototype.watcherFor =
 
 StageMorph.prototype.getLastAnswer
     = SpriteMorph.prototype.getLastAnswer;
+
+StageMorph.prototype.reportThreadCount
+    = SpriteMorph.prototype.reportThreadCount;
 
 // StageMorph message broadcasting
 
@@ -6757,7 +6784,7 @@ WatcherMorph.prototype.object = function () {
 WatcherMorph.prototype.isGlobal = function (selector) {
     return contains(
         ['getLastAnswer', 'getLastMessage', 'getTempo', 'getTimer',
-             'reportMouseX', 'reportMouseY'],
+             'reportMouseX', 'reportMouseY', 'reportThreadCount'],
         selector
     );
 };
