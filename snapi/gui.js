@@ -292,13 +292,7 @@ IDE_Morph.prototype.createLogo = function () {
 
 IDE_Morph.prototype.originalInit = IDE_Morph.prototype.init; 
 IDE_Morph.prototype.init = function () {
-	// Default design upon loading is Flat
-	this.saveSetting('design', 'flat');
-
 	this.originalInit();
-
-	// Default language upon loading is Catalan
-	this.setLanguage('ca');
 
 	// Allow dropping of InspectorMorphs
 	originalWantsDropOf = this.wantsDropOf;
