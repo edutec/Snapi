@@ -201,42 +201,41 @@ IDE_Morph.prototype.projectMenu = function () {
 						function () {
 								// read a list of libraries from an external file,
 								var libMenu = new MenuMorph(this, 'Import API blocks'),
-				libUrl = 'apilibs/LIBRARIES';
-		// our vps URL?
-		// libUrl = 'http://snap.berkeley.edu/snapsource/libraries/' +
-		// 'LIBRARIES';
+									libUrl = 'apilibs/LIBRARIES';
+									// our vps URL?
+									// libUrl = 'http://snap.berkeley.edu/snapsource/libraries/' +
+									// 'LIBRARIES';
 
-		function loadLib(name) {
-				var url = 'apilibs/'
-				+ name
-				+ '.xml';
-		myself.droppedText(myself.getURL(url), name);
-		}
-
-		myself.getURL(libUrl).split('\n').forEach(function (line) {
-				if (line.length > 0) {
-						libMenu.addItem(
-								line.substring(line.indexOf('\t') + 1),
-								function () {
-										loadLib(
-												line.substring(0, line.indexOf('\t'))
-											   );
+								function loadLib(name) {
+									var url = 'apilibs/'
+												+ name
+												+ '.xml';
+									myself.droppedText(myself.getURL(url), name);
 								}
-								);
-				}
-		});
 
-		libMenu.popup(world, pos);
+								myself.getURL(libUrl).split('\n').forEach(function (line) {
+									if (line.length > 0) {
+										libMenu.addItem(
+											line.substring(line.indexOf('\t') + 1),
+											function () {
+												loadLib(line.substring(0, line.indexOf('\t')));
+											}
+										);
+									}
+								});
+
+								libMenu.popup(world, pos);
 						},
 						'Choose among different API blocks to add to this project.'
-								);
+		);
+
 		menu.addLine();
 		menu.addItem(
 						'Tutorial',
 						function() {
 								myself.startTutorial(world);
 						}
-					)
+					);
 
 		menu.popup(world, pos);
 };
@@ -290,39 +289,122 @@ IDE_Morph.prototype.createLogo = function () {
 		this.add(this.logo);
 };
 
+IDE_Morph.prototype.snapMenu = function () {
+    var menu,
+        world = this.world();
+
+    menu = new MenuMorph(this);
+    menu.addItem('About Snapi!', 'aboutSnapi');
+    menu.addItem('About Snap!', 'aboutSnap');
+    menu.addLine();
+    menu.addItem(
+        'Reference manual',
+        function () {
+            window.open('help/SnapManual.pdf', 'SnapReferenceManual');
+        }
+    );
+    menu.addItem(
+        'Snap! website',
+        function () {
+            window.open('http://snap.berkeley.edu/', 'SnapWebsite');
+        }
+    );
+    menu.addItem(
+        'Download source',
+        function () {
+            window.open(
+                'http://snap.berkeley.edu/snapsource/snap.zip',
+                'SnapSource'
+            );
+        }
+    );
+    if (world.isDevMode) {
+        menu.addLine();
+        menu.addItem(
+            'Switch back to user mode',
+            'switchToUserMode',
+            'disable deep-Morphic\ncontext menus'
+                + '\nand show user-friendly ones',
+            new Color(0, 100, 0)
+        );
+    } else if (world.currentKey === 16) { // shift-click
+        menu.addLine();
+        menu.addItem(
+            'Switch to dev mode',
+            'switchToDevMode',
+            'enable Morphic\ncontext menus\nand inspectors,'
+                + '\nnot user-friendly!',
+            new Color(100, 0, 0)
+        );
+    }
+    menu.popup(world, this.logo.bottomLeft());
+};
+
+IDE_Morph.prototype.aboutSnapi = function () {
+    var dlg, aboutTxt, pic, world = this.world();
+
+	pic = Morph.fromImageURL('snapi/logos-about.png');
+	pic.setExtent(new Point(230, 76));
+
+    aboutTxt = 'Snapi! 1.0 beta\n\n'
+        + 'Copyright \u24B8 2015 Citilab\n'
+        + 'edutec@e-citilab.eu\n\n'
+
+        + 'Snapi! is a Snap! extension developed by the Edutec\n'
+		+ 'educational research team at Citilab, Barcelona.\n\n'
+
+		+ 'Its aim is to take advantage of Snap!\'s wonderful\n'
+		+ 'educational and computational power to bring API\n'
+		+ 'programming and OpenData to the general public.\n\n'
+
+		+ 'This project has been sponsored by the Barcelona\n'
+	    + 'Metropolitan Area administration (AMB).\n\n'
+
+        + 'For any questions or suggestions, please contact us at:\n'
+		+ 'edutec@e-citilab.eu.\n\n'
+
+		+ 'http://amb.cat\n'
+		+ 'http://citilab.eu\n'
+		+ 'http://edutec.citilab.eu'
+
+    dlg = new DialogBoxMorph();
+    dlg.inform(localize('About Snapi'), localize(aboutTxt), world, pic);
+};
+
+
 IDE_Morph.prototype.originalInit = IDE_Morph.prototype.init; 
 IDE_Morph.prototype.init = function () {
-	this.originalInit();
+		this.originalInit();
 
-	// Allow dropping of InspectorMorphs
-	originalWantsDropOf = this.wantsDropOf;
-	this.wantsDropOf = function (morph) {
-		return (originalWantsDropOf() || morph instanceof InspectorMorph);
-    };
+		// Allow dropping of InspectorMorphs
+		originalWantsDropOf = this.wantsDropOf;
+		this.wantsDropOf = function (morph) {
+				return (originalWantsDropOf() || morph instanceof InspectorMorph);
+		};
 }
 
 // Language
 
 IDE_Morph.prototype.originalSetLanguage = IDE_Morph.prototype.setLanguage;
 IDE_Morph.prototype.setLanguage = function(lang, callback) {
-	var myself = this;
+		var myself = this;
 
-	myself.originalSetLanguage(lang, function() {
-		var translation = document.getElementById('snapi-language'),
-		src = 'snapi/lang-' + lang + '.js',
-		myInnerSelf = this;
+		myself.originalSetLanguage(lang, function() {
+				var translation = document.getElementById('snapi-language'),
+				src = 'snapi/lang-' + lang + '.js',
+				myInnerSelf = this;
 		if (translation) {
-			document.head.removeChild(translation);
+				document.head.removeChild(translation);
 		}
 		if (lang === 'en') {
-			return this.reflectLanguage('en', callback);
+				return this.reflectLanguage('en', callback);
 		}
 		translation = document.createElement('script');
 		translation.id = 'snapi-language';
 		translation.onload = function () {
-			myInnerSelf.reflectLanguage(lang, callback);
+				myInnerSelf.reflectLanguage(lang, callback);
 		};
 		document.head.appendChild(translation);
 		translation.src = src; 
-	});
+		});
 };
