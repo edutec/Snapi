@@ -147,12 +147,12 @@ Process.prototype.getCurrentLatitude = function() {
 
 Process.prototype.xFromLongitude = function(longitude) {
 		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
-		return stage.map.getPixelFromCoordinate(ol.proj.transform([longitude, 0], 'EPSG:4326', 'EPSG:3857'))[0] - (stage.width() / 2);
+		return stage.map.getPixelFromCoordinate(ol.proj.transform([Number.parseFloat(longitude), 0], 'EPSG:4326', 'EPSG:3857'))[0] - (stage.width() / 2);
 }
 
 Process.prototype.yFromLatitude = function(latitude) {
 		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
-		return (stage.height() / 2) - stage.map.getPixelFromCoordinate(ol.proj.transform([0, latitude], 'EPSG:4326', 'EPSG:3857'))[1];
+		return (stage.height() / 2) - stage.map.getPixelFromCoordinate(ol.proj.transform([0, Number.parseFloat(latitude)], 'EPSG:4326', 'EPSG:3857'))[1];
 }
 
 Process.prototype.setMapZoom = function(level) {
@@ -341,4 +341,32 @@ Process.prototype.reportListContainsItem = function (list, element) {
 Process.prototype.originalDoForEach = Process.prototype.doForEach; 
 Process.prototype.doForEach = function (upvar, list, script) {
 	return this.originalDoForEach(upvar, this.tryToParseJsonList(list), script)
+}
+
+// Images
+
+Process.prototype.stampFromURL = function(url) {
+		var sprite = this.homeContext.receiver,
+			stage = sprite.parentThatIsA(StageMorph),
+			context = stage.penTrails().getContext('2d'),
+        	isWarped = sprite.isWarped,
+			img = new Image();
+
+		if (isWarped) {
+			sprite.endWarp();
+		}
+
+		img.src = 'http://' + url;
+		context.save();
+		context.scale(1 / stage.scale, 1 / stage.scale);
+		context.drawImage(
+        	img,
+	        (sprite.left() - stage.left()),
+    	    (sprite.top() - stage.top())
+	    );
+		context.restore();
+		sprite.changed();
+		if (isWarped) {
+				sprite.startWarp();
+		}
 }
