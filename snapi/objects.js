@@ -181,6 +181,15 @@ SpriteMorph.prototype.initBlocks = function() {
 	this.blocks.doForEach.category = 'control';
 	this.blocks.doForEach.dev = 'false';
 
+	// Pen
+	this.blocks.stampFromURL =
+	{
+		type: 'command',
+		category: 'pen',
+		spec: 'stamp image from http:// %s',
+		defaults: ['snapi.citilab.eu/snapi/logo.png']
+	}
+
 	// Operators
 	this.blocks.colorFromPicker =
 	{
@@ -377,6 +386,11 @@ var blockTemplates = function(category) {
 	if (category === 'control') {
 		blocks.push(blockBySelector('doForEach'));
 	}
+
+	if (category === 'pen') {
+		blocks.push(blockBySelector('stampFromURL'));
+	}
+
 	if (category === 'operators') {
 		blocks.push('-');
 		blocks.push(blockBySelector('colorFromPicker'));
