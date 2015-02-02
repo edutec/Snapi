@@ -98,7 +98,7 @@ Process.prototype.apiCall = function (method, protocol, url, parameters) {
 }
 
 Process.prototype.proxiedApiCall = function (method, protocol, url, parameters) {
-		return this.apiCall(method, protocol, 'www.corsproxy.com/' + url, parameters)
+		return this.apiCall(method, protocol, '37.187.192.244/' + url, parameters)
 }
 
 // Maps Category
