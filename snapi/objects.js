@@ -244,7 +244,7 @@ SpriteMorph.prototype.initBlocks = function() {
 	{
 		type: 'reporter',
 		category: 'api',
-		spec: 'value at %s of object %s'
+		spec: '%s of %s'
 	};
 
 	this.blocks.apiCall =
@@ -328,14 +328,14 @@ SpriteMorph.prototype.initBlocks = function() {
 	{
 		type: 'command',
 		category: 'map',
-		spec: 'add %clr marker at long %n lat %n value %s',
+		spec: 'add %clr marker at long %n lat %n with label %s',
 		defaults: [null, 2.061749, 41.359827, 'Citilab']
 	};
 	this.blocks.simpleAddMarker =
 	{
 		type: 'command',
 		category: 'map',
-		spec: 'add %clr marker at %l value %s'
+		spec: 'add %clr marker at coordinates %l with label %s'
 	};
 	this.blocks.showMarkers =
 	{
