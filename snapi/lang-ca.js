@@ -49,6 +49,14 @@ tempDict = {
 		'Sobre Snapi',
 	'Snapi! 1.0 beta\n\nCopyright \u24B8 2015 Citilab\nedutec@e-citilab.eu\n\nSnapi! is a Snap! extension developed by the Edutec\neducational research team at Citilab, Barcelona.\n\nIts aim is to take advantage of Snap!\'s wonderful\neducational and computational power to bring API\nprogramming and OpenData to the general public.\n\nThis project has been sponsored by the Barcelona\nMetropolitan Area administration (AMB).\n\nFor any questions or suggestions, please contact us at:\nedutec@e-citilab.eu.\n\nhttp://amb.cat\nhttp://citilab.eu\nhttp://edutec.citilab.eu':
 		'Snapi! 1.0 beta\n\nCopyright \u24B8 2015 Citilab\nedutec@e-citilab.eu\n\nSnapi! és una extensió de Snap! desenvolupada per\nl\'equip de recerca Edutec del Citilab (Cornellà de\nLlobregat, Barcelona)\n\nEl seu objectiu és aprofitar les grans capacitats\neducatives i computacionals de Snap! per tal d\'apropar\nla programació amb APIs i OpenData a la ciutadania.\n\nAquest projecte ha estat finançat per l\'AMB.\n\nPer qualsevol dubte o suggerència, ens podeu trobar a:\nedutec@e-citilab.eu.\n\nhttp://amb.cat\nhttp://citilab.eu\nhttp://edutec.citilab.eu',
+
+	// Errors:
+	'JSON string couldn\'t be parsed':
+		'el text no sembla ser un JSON correcte',
+	'property ':
+		'no s\'ha trobat la propietat ',
+	' not found in this object':
+		' en aquest objecte',
 	
 	// Control:
 	'for %upvar in %l %cs':
@@ -78,8 +86,8 @@ tempDict = {
 		'JSON d\'objecte %l',
 	'%s → %s':
 		'%s → %s',
-	'value at %s of object %s':
-		'valor %s d\'objecte %s',
+	'%s of %s':
+		'%s de %s',
 	'%method at %protocol %s with parameters %mult%s':
 		'%method a %protocol %s amb paràmetres %mult%s',
 	'proxied %method at %protocol %s with parameters %mult%s':
@@ -138,10 +146,10 @@ tempDict = {
 		'fixa zoom a %zoomLevel',
 	'zoom level':
 		'zoom',
-	'add %clr marker at long %n lat %n value %s':
-		'afegeix marcador %clr a long %n lat %n valor %s',
-	'add %clr marker at %l value %s':
-		'afegeix marcador %clr a %l valor %s',
+	'add %clr marker at long %n lat %n with label %s':
+		'afegeix marcador %clr a long %n lat %n amb etiqueta %s',
+	'add %clr marker at coordinates %l with label %s':
+		'afegeix marcador %clr a coordenades %l amb etiqueta %s',
 	'show markers':
 		'mostra marcadors',
 	'hide markers':
