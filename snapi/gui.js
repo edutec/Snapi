@@ -240,7 +240,155 @@ IDE_Morph.prototype.projectMenu = function () {
 		menu.popup(world, pos);
 };
 
-// Snappy! logo
+// Examples now pulls from local. We need to override, proxying is too complex in this case
+ProjectDialogMorph.prototype.getExamplesProjectList = function () {
+    var dir,
+        projects = [];
+    dir = JSON.parse(this.ide.getURL('https://api.github.com/repos/bromagosa/Snapi/contents/snapi/examples'));
+	dir.forEach(function(each){
+		var dta = {
+			name: each.name.replace('.xml',''),
+			thumb: null,
+			notes: null,
+			path: each.path
+		};
+		projects.push(dta)
+	})
+    projects.sort(function (x, y) {
+        return x.name < y.name ? -1 : 1;
+    });
+    return projects;
+};
+
+ProjectDialogMorph.prototype.setSource = function (source) {
+    var myself = this,
+        msg;
+
+    this.source = source; //this.task === 'save' ? 'local' : source;
+    this.srcBar.children.forEach(function (button) {
+        button.refresh();
+    });
+    switch (this.source) {
+    case 'cloud':
+        msg = myself.ide.showMessage('Updating\nproject list...');
+        this.projectList = [];
+        SnapCloud.getProjectList(
+            function (projectList) {
+                myself.installCloudProjectList(projectList);
+                msg.destroy();
+            },
+            function (err, lbl) {
+                msg.destroy();
+                myself.ide.cloudError().call(null, err, lbl);
+            }
+        );
+        return;
+    case 'examples':
+        this.projectList = this.getExamplesProjectList();
+        break;
+    case 'local':
+        this.projectList = this.getLocalProjectList();
+        break;
+    }
+
+    this.listField.destroy();
+    this.listField = new ListMorph(
+        this.projectList,
+        this.projectList.length > 0 ?
+                function (element) {
+                    return element.name;
+                } : null,
+        null,
+        function () {myself.ok(); }
+    );
+
+    this.fixListFieldItemColors();
+    this.listField.fixLayout = nop;
+    this.listField.edge = InputFieldMorph.prototype.edge;
+    this.listField.fontSize = InputFieldMorph.prototype.fontSize;
+    this.listField.typeInPadding = InputFieldMorph.prototype.typeInPadding;
+    this.listField.contrast = InputFieldMorph.prototype.contrast;
+    this.listField.drawNew = InputFieldMorph.prototype.drawNew;
+    this.listField.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
+
+    if (this.source === 'local') {
+        this.listField.action = function (item) {
+            var src, xml;
+
+            if (item === undefined) {return; }
+            if (myself.nameField) {
+                myself.nameField.setContents(item.name || '');
+            }
+            if (myself.task === 'open') {
+
+                src = localStorage['-snap-project-' + item.name];
+                xml = myself.ide.serializer.parse(src);
+
+                myself.notesText.text = xml.childNamed('notes').contents
+                    || '';
+                myself.notesText.drawNew();
+                myself.notesField.contents.adjustBounds();
+                myself.preview.texture = xml.childNamed('thumbnail').contents
+                    || null;
+                myself.preview.cachedTexture = null;
+                myself.preview.drawNew();
+            }
+            myself.edit();
+        };
+    } else { // 'examples', 'cloud' is initialized elsewhere
+        this.listField.action = function (item) {
+            var src, xml;
+            if (item === undefined) {return; }
+            if (myself.nameField) {
+                myself.nameField.setContents(item.name || '');
+            }
+            src = myself.ide.getURL(item.path);
+
+            xml = myself.ide.serializer.parse(src);
+            myself.notesText.text = xml.childNamed('notes').contents
+                || '';
+            myself.notesText.drawNew();
+            myself.notesField.contents.adjustBounds();
+            myself.preview.texture = xml.childNamed('thumbnail').contents
+                || null;
+            myself.preview.cachedTexture = null;
+            myself.preview.drawNew();
+            myself.edit();
+        };
+    }
+    this.body.add(this.listField);
+    this.shareButton.hide();
+    this.unshareButton.hide();
+    if (this.source === 'local') {
+        this.deleteButton.show();
+    } else { // examples
+        this.deleteButton.hide();
+    }
+    this.buttons.fixLayout();
+    this.fixLayout();
+    if (this.task === 'open') {
+        this.clearDetails();
+    }
+};
+
+ProjectDialogMorph.prototype.openProject = function () {
+    var proj = this.listField.selected,
+        src;
+    if (!proj) {return; }
+    this.ide.source = this.source;
+    if (this.source === 'cloud') {
+        this.openCloudProject(proj);
+    } else if (this.source === 'examples') {
+        src = this.ide.getURL('snapi/examples/' + proj.name + '.xml');
+        this.ide.openProjectString(src);
+        this.destroy();
+    } else { // 'local'
+        this.ide.openProject(proj.name);
+        this.destroy();
+    }
+};
+
+// Snapi! logo
 
 IDE_Morph.prototype.createLogo = function () {
 		var myself = this;
