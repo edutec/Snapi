@@ -22,6 +22,12 @@ IDE_Morph.prototype.projectMenu = function () {
 							);
 		}
 		menu.addItem('Save As...', 'saveProjectsBrowser');
+		menu.addItem(
+			'Save to disk',
+        	'saveProjectToDisk',
+        	'store this project\nin the downloads folder\n'
+            + '(in supporting browsers)'
+    	);
 		menu.addLine();
 		menu.addItem(
 						'Import...',
@@ -56,23 +62,6 @@ IDE_Morph.prototype.projectMenu = function () {
 						},
 						'file menu import hint' // looks up the actual text in the translator
 								);
-
-		menu.addItem(
-						shiftClicked ?
-						'Export project as plain text...' : 'Export project...',
-						function () {
-								if (myself.projectName) {
-										myself.exportProject(myself.projectName, shiftClicked);
-								} else {
-										myself.prompt('Export Project As...', function (name) {
-												myself.exportProject(name);
-										}, null, 'exportProject');
-								}
-						},
-						'show project data as XML\nin a new browser window',
-						shiftClicked ? new Color(100, 0, 0) : null
-					);
-
 		menu.addItem(
 						'Export blocks...',
 						function () {myself.exportGlobalBlocks(); },

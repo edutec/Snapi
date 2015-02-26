@@ -49,6 +49,10 @@ tempDict = {
 		'Sobre Snapi',
 	'Snapi! 1.0 beta\n\nCopyright \u24B8 2015 Citilab\nedutec@e-citilab.eu\n\nSnapi! is a Snap! extension developed by the Edutec\neducational research team at Citilab, Barcelona.\n\nIts aim is to take advantage of Snap!\'s wonderful\neducational and computational power to bring API\nprogramming and OpenData to the general public.\n\nThis project has been sponsored by the Barcelona\nMetropolitan Area administration (AMB).\n\nFor any questions or suggestions, please contact us at:\nedutec@e-citilab.eu.\n\nhttp://amb.cat\nhttp://citilab.eu\nhttp://edutec.citilab.eu':
 		'Snapi! 1.0 beta\n\nCopyright \u24B8 2015 Citilab\nedutec@e-citilab.eu\n\nSnapi! és una extensió de Snap! desenvolupada per\nl\'equip de recerca Edutec del Citilab (Cornellà de\nLlobregat, Barcelona)\n\nEl seu objectiu és aprofitar les grans capacitats\neducatives i computacionals de Snap! per tal d\'apropar\nla programació amb APIs i OpenData a la ciutadania.\n\nAquest projecte ha estat finançat per l\'AMB.\n\nPer qualsevol dubte o suggerència, ens podeu trobar a:\nedutec@e-citilab.eu.\n\nhttp://amb.cat\nhttp://citilab.eu\nhttp://edutec.citilab.eu',
+	'Save to disk':
+		'Desar a disc',
+	'store this project\nin the downloads folder\n(in supporting browsers)':
+		'desa aquest projecte\na la carpeta de descàrregues\n(només en navegadors que\nho suportin)',
 
 	// Errors:
 	'JSON string couldn\'t be parsed':
