@@ -138,8 +138,8 @@ Process.prototype.switchView = function(view) {
 
 Process.prototype.setMapCenter = function(lng, lat) {
 		var stage = this.homeContext.receiver.parentThatIsA(StageMorph),
-			longitude = Number.parseFloat(lng),
-			latitude = Number.parseFloat(lat);
+			longitude = parseFloat(lng),
+			latitude = parseFloat(lat);
 		stage.map.getView().setCenter(ol.proj.transform([isNaN(longitude)?0:longitude, isNaN(latitude)?0:latitude], 'EPSG:4326', 'EPSG:3857'));
 		stage.delayedRefresh();
 }
@@ -156,12 +156,12 @@ Process.prototype.getCurrentLatitude = function() {
 
 Process.prototype.xFromLongitude = function(longitude) {
 		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
-		return stage.map.getPixelFromCoordinate(ol.proj.transform([Number.parseFloat(longitude), 0], 'EPSG:4326', 'EPSG:3857'))[0] - (stage.width() / 2);
+		return stage.map.getPixelFromCoordinate(ol.proj.transform([parseFloat(longitude), 0], 'EPSG:4326', 'EPSG:3857'))[0] - (stage.width() / 2);
 }
 
 Process.prototype.yFromLatitude = function(latitude) {
 		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
-		return (stage.height() / 2) - stage.map.getPixelFromCoordinate(ol.proj.transform([0, Number.parseFloat(latitude)], 'EPSG:4326', 'EPSG:3857'))[1];
+		return (stage.height() / 2) - stage.map.getPixelFromCoordinate(ol.proj.transform([0, parseFloat(latitude)], 'EPSG:4326', 'EPSG:3857'))[1];
 }
 
 Process.prototype.setMapZoom = function(level) {
@@ -195,8 +195,8 @@ Process.prototype.clearMarkers = function() {
 
 Process.prototype.addMarker = function(color, lng, lat, value) {
 		var stage = this.homeContext.receiver.parentThatIsA(StageMorph),
-			longitude = Number.parseFloat(lng),
-			latitude = Number.parseFloat(lat),
+			longitude = parseFloat(lng),
+			latitude = parseFloat(lat),
 			pos;
 
 		var iconFeature = new ol.Feature({
