@@ -1,0 +1,7 @@
+<blocks app="Snap! 4.0, http://snap.berkeley.edu" version="1"><block-definition s="demana servei %&apos;servei&apos; versió %&apos;versio&apos; subservei %&apos;subservei&apos; operació %&apos;operacio&apos; amb paràmetres %&apos;params&apos;" type="reporter" category="api"><header></header><code></code><inputs><input type="%txt"><options>indicadors
+cerca de població=pob
+rectificacions
+municipi en xifres=emex
+calendari de difusió de resultats=cal
+diades internacionals=diades
+onomàstica=onomastica</options></input><input type="%txt"></input><input type="%txt"></input><input type="%txt"></input><input type="%mult%s"></input></inputs><script><block s="doIfElse"><block s="reportGreaterThan"><block s="reportStringSize"><block var="subservei"/></block><l>0</l></block><script><block s="doReport"><block s="proxiedApiCall"><l><option>GET</option></l><l><option>http://</option></l><block s="reportJoinWords"><list><l>api.idescat.cat/</l><block var="servei"/><l>/v</l><block var="versio"/><l>/</l><block var="subservei"/><l>/</l><block var="operacio"/><l>.json</l></list></block><block var="params"/></block></block></script><script><block s="doReport"><block s="proxiedApiCall"><l><option>GET</option></l><l><option>http://</option></l><block s="reportJoinWords"><list><l>api.idescat.cat/</l><block var="servei"/><l>/v</l><block var="versio"/><l>/</l><block var="operacio"/><l>.json</l></list></block><block var="params"/></block></block></script></block></script></block-definition></blocks>

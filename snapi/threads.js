@@ -30,15 +30,15 @@ Process.prototype.valueAt = function (key, snapObject) {
 			} catch(err) {
 				throw new Error(localize('JSON string couldn\'t be parsed'));
 			};
-			if (object[key]) {
+			if (object.hasOwnProperty(key)) {
 				value = JSON.stringify(object[key]);
 				value = value.replace(/^"/g,'').replace(/"$/g,'');
 			} else {
-				throw new Error(localize('property ') + key + localize(' not found in this object'));
-				return;
+				//throw new Error(localize('property ') + key + localize(' not found in this object'));
+				return null;
 			}
 		} else if (snapObject instanceof List && snapObject.length() > 0) {
-			value = this.associationAt(key, snapObject).value
+			return this.valueAt(key, this.objectToJsonString(snapObject))
 		} else {
 			// This doesn't look like something JSON-inspectable, ignore it
 			return;
