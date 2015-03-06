@@ -1,5 +1,7 @@
 // API category
 
+Process.prototype.proxyIP = '37.187.192.244';
+
 Process.prototype.newAssociation = function(key, value) {
 		return new Association(key,value);
 };
@@ -25,23 +27,23 @@ Process.prototype.associationAt = function (key, snapObject) {
 Process.prototype.valueAt = function (key, snapObject) {
 		var value;
 		if (typeof snapObject == 'string') { 
-			try {
-				var object = JSON.parse(snapObject) 
-			} catch(err) {
-				throw new Error(localize('JSON string couldn\'t be parsed'));
-			};
-			if (object.hasOwnProperty(key)) {
-				value = JSON.stringify(object[key]);
-				value = value.replace(/^"/g,'').replace(/"$/g,'');
-			} else {
-				//throw new Error(localize('property ') + key + localize(' not found in this object'));
-				return null;
-			}
+				try {
+						var object = JSON.parse(snapObject) 
+				} catch(err) {
+						throw new Error(localize('JSON string couldn\'t be parsed'));
+				};
+				if (object.hasOwnProperty(key)) {
+						value = JSON.stringify(object[key]);
+						value = value.replace(/^"/g,'').replace(/"$/g,'');
+				} else {
+						//throw new Error(localize('property ') + key + localize(' not found in this object'));
+						return null;
+				}
 		} else if (snapObject instanceof List && snapObject.length() > 0) {
-			return this.valueAt(key, this.objectToJsonString(snapObject))
+				return this.valueAt(key, this.objectToJsonString(snapObject))
 		} else {
-			// This doesn't look like something JSON-inspectable, ignore it
-			return;
+				// This doesn't look like something JSON-inspectable, ignore it
+				return;
 		};
 		return value;
 };
@@ -107,7 +109,7 @@ Process.prototype.apiCall = function (method, protocol, url, parameters) {
 }
 
 Process.prototype.proxiedApiCall = function (method, protocol, url, parameters) {
-		return this.apiCall(method, protocol, '37.187.192.244/' + url, parameters)
+		return this.apiCall(method, protocol, this.proxyIP + '/' + url, parameters)
 }
 
 // Maps Category
@@ -201,8 +203,8 @@ Process.prototype.addMarker = function(color, lng, lat, value) {
 
 		var iconFeature = new ol.Feature({
 				geometry: new ol.geom.Point(ol.proj.transform([isNaN(longitude)?0:longitude, isNaN(latitude)?0:latitude], 'EPSG:4326', 'EPSG:3857')),
-				value: value,
-				bubble: new SpeechBubbleMorph(value)
+			value: value,
+			bubble: new SpeechBubbleMorph(value)
 		});
 
 		var iconStyle = new ol.style.Style({
@@ -223,27 +225,27 @@ Process.prototype.simpleAddMarker = function(color, loc, value) {
 		if (loc.length < 1) { return };
 
 		if (loc instanceof Array) {
-			finalLoc = loc;
+				finalLoc = loc;
 		} else if (loc instanceof List) {
-			finalLoc = loc.asArray();
+				finalLoc = loc.asArray();
 		} else {
-			try {
-				finalLoc = JSON.parse(loc);
-			} catch(error) {
-				throw error;
-			}
+				try {
+						finalLoc = JSON.parse(loc);
+				} catch(error) {
+						throw error;
+				}
 		}
 
 		function flatten(array) {
-			if (array[0] instanceof Array) {
-				return flatten(array[0])
-			} else if (array[0] instanceof List) {
-				return flatten(array[0].asArray())
-			} else {
-				return array
-			}
+				if (array[0] instanceof Array) {
+						return flatten(array[0])
+				} else if (array[0] instanceof List) {
+						return flatten(array[0].asArray())
+				} else {
+						return array
+				}
 		}
-		
+
 		finalLoc = flatten(finalLoc);
 
 		this.addMarker(color, finalLoc[0], finalLoc[1], value);
@@ -259,11 +261,11 @@ Process.prototype.hideBubbles = function() {
 		var stage = this.homeContext.receiver.parentThatIsA(StageMorph);
 		stage.map.showingBubbles = false;
 		stage.map.markers.forEachFeature(function(feature) {
-			// Bonus feature! When on "show bubbles" mode, this code allows you to 
-			// place the clicked bubble on top of all others!
-			var bubble = feature.get('bubble')
-			bubble.hasBeenAddedToStage = false;
-			bubble.destroy();
+				// Bonus feature! When on "show bubbles" mode, this code allows you to 
+				// place the clicked bubble on top of all others!
+				var bubble = feature.get('bubble')
+				bubble.hasBeenAddedToStage = false;
+		bubble.destroy();
 		});
 }
 
@@ -289,67 +291,67 @@ Process.prototype.colorFromString = function(string) {
 			element = document.createElement('div');
 
 		// We first attempt to read a color by (ab)using HTML color names
-	    element.style.color = string.split(' ').join('');
-    	components = window.getComputedStyle(document.body.appendChild(element)).color.match(/\d+/g).map(function(a){ return parseInt(a,10) });
+		element.style.color = string.split(' ').join('');
+		components = window.getComputedStyle(document.body.appendChild(element)).color.match(/\d+/g).map(function(a){ return parseInt(a,10) });
 		document.body.removeChild(element);
 
 		// If there is no color named after that string, we use magic. There are only 255 magic colors, deal with it!
 		if (string.toLowerCase() != 'black' && components[0] == 0 && components[1] == 0 && components[2] == 0) {
-			return this.colorFromHSV(
-				((Math.abs(
-					string.toString().split('').reduce(function(a,b){
-						a = ((a<<5) - a) + b.charCodeAt(0); return a & a
-					}, 
-					0)) % 255) / 255)
-				,1
-				,1)
+				return this.colorFromHSV(
+								((Math.abs(
+										   string.toString().split('').reduce(function(a,b){
+												   a = ((a<<5) - a) + b.charCodeAt(0); return a & a
+										   }, 
+										   0)) % 255) / 255)
+								,1
+								,1)
 		} else {
-			return new Color(components[0], components[1], components[2])
+				return new Color(components[0], components[1], components[2])
 		}
 }
 
 // List modifications to accept JSON arrays
 
 Process.prototype.tryToParseJsonList = function(list) {
-	var lst = list;
-	if (typeof list == 'string') {
-		try {
-			lst = this.jsonObject(list);
-		} catch(err) {
-			lst = new List();
+		var lst = list;
+		if (typeof list == 'string') {
+				try {
+						lst = this.jsonObject(list);
+				} catch(err) {
+						lst = new List();
+				}
 		}
-	}
-	return lst;
+		return lst;
 }
 
 Process.prototype.originalReportCONS = Process.prototype.reportCONS;
 Process.prototype.reportCONS = function (car, cdr) {
-	return this.originalReportCONS(car, this.tryToParseJsonList(cdr));
+		return this.originalReportCONS(car, this.tryToParseJsonList(cdr));
 };
 
 Process.prototype.originalReportCDR = Process.prototype.reportCDR;
 Process.prototype.reportCDR = function (list) {
-	return this.originalReportCDR(this.tryToParseJsonList(list));
+		return this.originalReportCDR(this.tryToParseJsonList(list));
 };
 
 Process.prototype.originalReportListItem = Process.prototype.reportListItem;
 Process.prototype.reportListItem = function (index, list) {
-	return this.originalReportListItem(index, this.tryToParseJsonList(list));
+		return this.originalReportListItem(index, this.tryToParseJsonList(list));
 }
 
 Process.prototype.originalReportListLength = Process.prototype.reportListLength;
 Process.prototype.reportListLength = function (list) {
-	return this.originalReportListLength(this.tryToParseJsonList(list));
+		return this.originalReportListLength(this.tryToParseJsonList(list));
 };
 
 Process.prototype.originalReportListContainsItem = Process.prototype.reportListContainsItem;
 Process.prototype.reportListContainsItem = function (list, element) {
-	return this.originalReportListContainsItem(this.tryToParseJsonList(list), element);
+		return this.originalReportListContainsItem(this.tryToParseJsonList(list), element);
 };
 
 Process.prototype.originalDoForEach = Process.prototype.doForEach; 
 Process.prototype.doForEach = function (upvar, list, script) {
-	return this.originalDoForEach(upvar, this.tryToParseJsonList(list), script)
+		return this.originalDoForEach(upvar, this.tryToParseJsonList(list), script)
 }
 
 // Images
@@ -358,28 +360,42 @@ Process.prototype.stampFromURL = function(url) {
 		var sprite = this.homeContext.receiver,
 			stage = sprite.parentThatIsA(StageMorph),
 			context = stage.penTrails().getContext('2d'),
-        	isWarped = sprite.isWarped,
+			isWarped = sprite.isWarped,
 			img = new Image(),
 			left = sprite.center().x - stage.left(),
 			top = sprite.center().y - stage.top();
 
-		if (isWarped) {
-			sprite.endWarp();
+		// We proxy the image so we can get over CORS policies
+		img.src = 'http://' + this.proxyIP + '/' + url;
+
+		// We've got to wait until it's ready to stamp it
+		img.onload = function() {
+				if (isWarped) {
+						sprite.endWarp();
+				}
+
+				// Now that we know its size, we can center it
+				left -= img.width/2;
+				top -= img.height/2;
+
+				context.save();
+				context.scale(1 / stage.scale, 1 / stage.scale);
+				context.translate(left, top);
+				context.rotate((sprite.heading - 90) * Math.PI/180);
+
+				context.drawImage(
+								img,
+								0,
+								0
+								);
+
+				context.restore();
+
+				stage.changed();
+
+				if (isWarped) {
+						sprite.startWarp();
+				}
 		}
 
-		img.src = 'http://' + url;
-		context.save();
-		context.scale(1 / stage.scale, 1 / stage.scale);
-		context.translate(left, top);
-		context.rotate((sprite.heading - 90) * Math.PI/180);
-		context.drawImage(
-        	img,
-			0,
-			0
-	    );
-		context.restore();
-		stage.changed();
-		if (isWarped) {
-				sprite.startWarp();
-		}
 }
