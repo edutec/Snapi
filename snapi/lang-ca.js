@@ -214,6 +214,23 @@ tempDict = {
 	'day average readings between %n / %n / %n and %n / %n / %n of device with id %n':
 		'mitjanes diàries entre %n / %n / %n i %n / %n / %n del dispositiu amb id %n',
 
+	// OpenWeatherMap
+	
+	'current conditions at %txt':
+		'condicions actuals a %txt',
+	'current conditions at long %n lat %n':
+		'condicions actuals a long %n lat %n',
+	'forecast for %n days in %txt':
+		'predicció per %n dies a %txt',
+	'forecast for %n days in long %n lat %n':
+		'predicció per %n dies a long %n lat %n',
+	'3-hour forecast for 5 days in %txt':
+		'predicció de 3 hores per 5 dies a %txt',
+	'3-hour forecast for 5 days in long %n lat %n':
+		'predicció de 3 hores per 5 dies a long %n lat %n',
+	'historical data for %txt':
+		'dades històriques de %txt',
+
 	// </API libraries>
 
 	// Missing strings
