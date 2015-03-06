@@ -359,7 +359,9 @@ Process.prototype.stampFromURL = function(url) {
 			stage = sprite.parentThatIsA(StageMorph),
 			context = stage.penTrails().getContext('2d'),
         	isWarped = sprite.isWarped,
-			img = new Image();
+			img = new Image(),
+			left = sprite.center().x - stage.left(),
+			top = sprite.center().y - stage.top();
 
 		if (isWarped) {
 			sprite.endWarp();
@@ -368,13 +370,15 @@ Process.prototype.stampFromURL = function(url) {
 		img.src = 'http://' + url;
 		context.save();
 		context.scale(1 / stage.scale, 1 / stage.scale);
+		context.translate(left, top);
+		context.rotate((sprite.heading - 90) * Math.PI/180);
 		context.drawImage(
         	img,
-	        (sprite.left() - stage.left()),
-    	    (sprite.top() - stage.top())
+			0,
+			0
 	    );
 		context.restore();
-		sprite.changed();
+		stage.changed();
 		if (isWarped) {
 				sprite.startWarp();
 		}
