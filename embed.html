@@ -50,9 +50,10 @@
 					started = true;
 					world.show();
 					if (!ide.isAppMode) { ide.toggleAppMode() }; 
-					ide.controlBar.appModeButton.hide();
+					ide.controlBar.delete();
+					/*ide.controlBar.appModeButton.hide();
 					ide.controlBar.pauseButton.hide();
-					ide.controlBar.startButton.setLeft(ide.controlBar.startButton.left() + 50);
+					ide.controlBar.startButton.setLeft(ide.controlBar.startButton.left() + 50);*/
 					ide.pressStart();
 				}
 			}
