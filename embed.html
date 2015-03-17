@@ -49,6 +49,7 @@
 				if (ide.projectName && !started) {
 					started = true;
 					world.show();
+					if (location.hash.indexOf('hidecontrols') > 0) { ide.controlBar.hide() };
 					if (!ide.isAppMode) { ide.toggleAppMode() }; 
 					ide.controlBar.appModeButton.hide();
 					ide.controlBar.pauseButton.hide();
