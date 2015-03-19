@@ -1,3 +1,17 @@
+###Snapi! - APIs and OpenData
+
+Snapi! is a Snap! modification that features new blocks aimed
+at working with APIs and OpenData.
+
+You'll find blocks to deal with the JSON exchange format, access
+REST APIs, treat colors as first-class citizens, represent information
+in maps or stamp images fetched straight from Internet URLs.
+
+Additionally, you'll find new tools that make working with JSON a
+breeze, as well as a complete world map integration with its several
+related tools and functionalites.
+
+--
 
 Snap! Build Your Own Blocks
 
