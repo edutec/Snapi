@@ -1,3 +1,6 @@
+// Force flat design
+IDE_Morph.prototype.setDefaultDesign = IDE_Morph.prototype.setFlatDesign; 
+
 IDE_Morph.prototype.projectMenu = function () {
 		var menu,
 			myself = this,
