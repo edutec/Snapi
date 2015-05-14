@@ -232,7 +232,25 @@ IDE_Morph.prototype.projectMenu = function () {
     menu.popup(world, pos);
 };
 
-// Examples now pulls from local. We need to override, proxying is too complex in this case
+// Costumes are now pulled from GitHub's API
+IDE_Morph.prototype.getCostumesList = function (dirname) {
+    var dir,
+        costumes = [];
+
+    dir = JSON.parse(this.getURL('https://api.github.com/repos/bromagosa/Snapi/contents/' + dirname));
+    dir.forEach( 
+        function (each) {
+            costumes.push(each.name);
+        }
+    );
+    costumes.sort(function (x, y) {
+        return x < y ? -1 : 1;
+    });
+    return costumes;
+};
+
+
+// Examples are now pulled from GitHub's API
 ProjectDialogMorph.prototype.getExamplesProjectList = function () {
     var dir,
     projects = [];
