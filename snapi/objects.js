@@ -707,3 +707,24 @@ StageMorph.prototype.delayedRefresh = function(delay) {
     var myself = this;		
     setTimeout(function(){ myself.changed() }, delay ? delay : 100)
 }
+
+// Fixes the __shout__go__ message bug
+SpriteMorph.prototype.allHatBlocksFor = function (message) {
+    if (typeof message === 'number') {message = message.toString(); }
+    return this.scripts.children.filter(function (morph) {
+        var event;
+        if (morph.selector) {
+            if (morph.selector === 'receiveGo') {
+                return message === '__shout__go__';
+            }
+            if (morph.selector === 'receiveOnClone') {
+                return message === '__clone__init__';
+            }
+            if (morph.selector === 'receiveMessage') {
+                event = morph.inputs()[0].evaluate();
+                return event === message || (event instanceof Array && message !== '__shout__go__' && message !== '__clone__init__');
+            }
+        }
+        return false;
+    });
+};
