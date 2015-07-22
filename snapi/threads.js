@@ -1,6 +1,6 @@
 // API category
 
-Process.prototype.proxyIP = '37.187.192.244';
+Process.prototype.proxyIP = 'corsproxy.citilab.eu';
 
 Process.prototype.newAssociation = function(key, value) {
     return new Association(key,value);
