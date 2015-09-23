@@ -72,3 +72,4 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
     return block;
 };
 
+SnapSerializer.prototype.app = 'Snapi http://snapi.citilab.eu';
