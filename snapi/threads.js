@@ -112,6 +112,32 @@ Process.prototype.proxiedApiCall = function (method, protocol, url, parameters) 
     return this.apiCall(method, protocol, this.proxyIP + '/' + url, parameters)
 }
 
+Process.prototype.extendedApiCall = function (method, protocol, url, parameters, header) {
+    var response;
+    var fullUrl = protocol + url;
+    if (!this.httpRequest) {
+        if (parameters) {
+            fullUrl += '?';
+            parameters.asArray().forEach(function(each) {  fullUrl += each.key + '=' + each.value + '&' });
+            fullUrl = fullUrl.slice(0, -1);
+        };
+        this.httpRequest = new XMLHttpRequest();
+        this.httpRequest.open(method, fullUrl, true);
+        this.httpRequest.setRequestHeader(header.key, header.value);
+        this.httpRequest.send(null);
+    } else if (this.httpRequest.readyState === 4) {
+        response = this.httpRequest.responseText;
+        this.httpRequest = null;
+        return response;
+    }
+    this.pushContext('doYield');
+    this.pushContext();
+}
+
+Process.prototype.extendedProxiedApiCall = function (method, protocol, url, parameters, header) {
+    return this.extendedApiCall(method, protocol, this.proxyIP + '/' + url, parameters, header)
+}
+
 // Maps Category
 
 Process.prototype.showMap = function() {
