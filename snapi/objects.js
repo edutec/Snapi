@@ -262,6 +262,21 @@ SpriteMorph.prototype.initBlocks = function() {
         defaults: ['GET', 'http://', null, null]
     };
 
+    this.blocks.extendedApiCall =
+        {
+        type: 'reporter',
+        category: 'api',
+        spec: '%method at %protocol %s with parameters %mult%s and header %mult%s',
+        defaults: ['GET', 'http://', null, null, null]
+    };
+    this.blocks.extendedProxiedApiCall =
+        {
+        type: 'reporter',
+        category: 'api',
+        spec: 'proxied %method at %protocol %s with parameters %mult%s and header %mult%s',
+        defaults: ['GET', 'http://', null, null, null]
+    };
+
     // Maps
     this.blocks.showMap =
         {
@@ -408,6 +423,9 @@ var blockTemplates = function(category) {
         blocks.push('-');
         blocks.push(blockBySelector('apiCall'));
         blocks.push(blockBySelector('proxiedApiCall'));
+        blocks.push('-');
+        blocks.push(blockBySelector('extendedApiCall'));
+        blocks.push(blockBySelector('extendedProxiedApiCall'));
     };
 
     if (category === 'map') {
