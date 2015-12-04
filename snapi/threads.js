@@ -114,6 +114,7 @@ Process.prototype.proxiedApiCall = function (method, protocol, url, parameters) 
 
 Process.prototype.extendedApiCall = function (method, protocol, url, parameters, headers) {
     var response,
+        myself = this,
         fullUrl = protocol + url;
 
     if (!this.httpRequest) {
@@ -130,7 +131,7 @@ Process.prototype.extendedApiCall = function (method, protocol, url, parameters,
         
         if (headers) {
             headers.asArray().forEach(function(each) {
-                this.httpRequest.setRequestHeader(each.key, each.value);
+                myself.httpRequest.setRequestHeader(each.key, each.value);
             });
         };
 
