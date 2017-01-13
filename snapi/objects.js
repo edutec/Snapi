@@ -485,11 +485,13 @@ StageMorph.prototype.init = function (globals) {
     });
 
     var layers = {
-        political:	new ol.layer.Tile({ source: new ol.source.TileJSON({ url: 'http://api.tiles.mapbox.com/v3/mapbox.geography-class.jsonp' }) }),
-        //satellite:	new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'sat'}) }),
+	//satellite:	new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'sat'}) }),
         //road:		new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'osm'}) }),
-	road:           new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png' }) }),
-        markers:	new ol.layer.Vector({ source: markersSource }) 
+        //sea:		new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png' }) }),
+        political:	new ol.layer.Tile({ source: new ol.source.TileJSON({ url: 'http://api.tiles.mapbox.com/v3/mapbox.geography-class.jsonp' }) }),
+	cycle:		new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png' }) }),
+	road:           new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png' }) }),
+        markers:	new ol.layer.Vector({ source: markersSource })
     };
 
     this.map = new ol.Map({
@@ -499,7 +501,7 @@ StageMorph.prototype.init = function (globals) {
             zoom: 3,
             center: loc
         }),
-        layers: [ layers.road, layers.political, layers.markers ]
+        layers: [ layers.cycle, layers.political, layers.road, layers.markers ]
     });
 
     this.map.layers = layers;
