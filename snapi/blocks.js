@@ -108,8 +108,7 @@ SyntaxElementMorph.prototype.labelPart = function(spec) {
 					null,
 					false,
 					{
-					'Road Map' : ['road'],
-					'Satellite' : ['satellite'], 
+					'Road Map' : ['road'], 
 					'Political' : ['political'], 
 					},
 					true

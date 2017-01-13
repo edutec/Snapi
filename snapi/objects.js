@@ -484,10 +484,11 @@ StageMorph.prototype.init = function (globals) {
         features: []
     });
 
-    var layers = { 
+    var layers = {
         political:	new ol.layer.Tile({ source: new ol.source.TileJSON({ url: 'http://api.tiles.mapbox.com/v3/mapbox.geography-class.jsonp' }) }),
-        satellite:	new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'sat'}) }),
-        road:		new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'osm'}) }),
+        //satellite:	new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'sat'}) }),
+        //road:		new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'osm'}) }),
+	road:           new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png' }) }),
         markers:	new ol.layer.Vector({ source: markersSource }) 
     };
 
@@ -498,7 +499,7 @@ StageMorph.prototype.init = function (globals) {
             zoom: 3,
             center: loc
         }),
-        layers: [ layers.satellite, layers.road, layers.political, layers.markers ]
+        layers: [ layers.road, layers.political, layers.markers ]
     });
 
     this.map.layers = layers;
