@@ -254,7 +254,7 @@ IDE_Morph.prototype.getCostumesList = function (dirname) {
 ProjectDialogMorph.prototype.getExamplesProjectList = function () {
     var dir,
         projects = [];
-    dir = JSON.parse(this.ide.getURL('https://api.github.com/repos/bromagosa/Snapi/contents/snapi/examples'));
+    dir = JSON.parse(this.ide.getURL('https://api.github.com/repos/edutec/Snapi/contents/snapi/examples'));
     dir.forEach(function(each){
         var dta = {
             name: each.name.replace('.xml',''),
