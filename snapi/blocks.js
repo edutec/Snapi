@@ -108,9 +108,13 @@ SyntaxElementMorph.prototype.labelPart = function(spec) {
 					null,
 					false,
 					{
-					'Cycle Map' : ['cycle'],
-					'Road Map' : ['road'],
+					'Standard' : ['standard'],
+					'Cycle' : ['cycle'],
+					'Landscape' : ['landscape'],
+					'Outdoors' : ['outdoors'],
 					'Political' : ['political'],
+					'Transport' : ['transport'],
+					'Wikimedia' : ['wikimedia'],
 					},
 					true
 					);

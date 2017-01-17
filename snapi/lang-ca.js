@@ -124,16 +124,24 @@ tempDict = {
 		'amaga mapa',
 	'switch view to %mapView':
 		'canvia visualització a %mapView',
-	'Road Map':
-		'Carreteres',
-	'Satellite':
-		'Satèl·lit',
+	'Standard':
+		'Estàndar',
+	'Cycle':
+                'Bicicleta',
+	'Landscape':
+                'Paisatge',
+	'Outdoors':
+                'Aire lliure',
 	'Political':
 		'Polític',
-	'road':
-		'carreteres',
-	'satellite':
-		'satèl·lit',
+	'standard':
+                'estàndar',
+        'cycle':
+                'bicicleta',
+        'landscape':
+                'paisatge',
+        'outdoors':
+                'aire lliure',
 	'political':
 		'polític',
 	'set center at long: %n lat: %n':

@@ -487,10 +487,13 @@ StageMorph.prototype.init = function (globals) {
     var layers = {
 	//satellite:	new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'sat'}) }),
         //road:		new ol.layer.Tile({ source: new ol.source.MapQuest({ layer: 'osm'}) }),
-        //sea:		new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png' }) }),
-        political:	new ol.layer.Tile({ source: new ol.source.TileJSON({ url: 'http://api.tiles.mapbox.com/v3/mapbox.geography-class.jsonp' }) }),
+	standard:	new ol.layer.Tile({ source: new ol.source.OSM() }),
 	cycle:		new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png' }) }),
-	road:           new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png' }) }),
+	landscape:      new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://{a-c}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png' }) }),
+	outdoors:	new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://{a-c}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png' }) }),
+	transport:	new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://{a-c}.tile.thunderforest.com/transport/{z}/{x}/{y}.png' }) }),
+	wikimedia:      new ol.layer.Tile({ source: new ol.source.OSM({ url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png' }) }),
+	political:      new ol.layer.Tile({ source: new ol.source.TileJSON({ url: 'https://api.tiles.mapbox.com/v3/mapbox.geography-class.jsonp' }) }),
         markers:	new ol.layer.Vector({ source: markersSource })
     };
 
@@ -501,7 +504,7 @@ StageMorph.prototype.init = function (globals) {
             zoom: 3,
             center: loc
         }),
-        layers: [ layers.cycle, layers.political, layers.road, layers.markers ]
+        layers: [ layers.standard, layers.cycle, layers.landscape, layers.outdoors, layers.transport, layers.wikimedia, layers.political, layers.markers ]
     });
 
     this.map.layers = layers;
@@ -513,7 +516,7 @@ StageMorph.prototype.init = function (globals) {
     }
 
     this.map.layers.markers.setVisible(true);
-    this.map.currentLayer = this.map.layers.road;
+    this.map.currentLayer = this.map.layers.standard;
     this.map.currentLayer.setVisible(true);
     this.map.markers = markersSource;
     this.map.showingBubbles = false;
